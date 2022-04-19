@@ -1,0 +1,25 @@
+plugins {
+    id 'java'
+}
+
+jar {
+    manifest {
+        attributes "Main-Class": "java/MainServer.java"
+    }
+
+    from {
+        configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation project(":common")
+}
+
+test {
+    useJUnitPlatform()
+}
