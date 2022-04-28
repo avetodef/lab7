@@ -5,6 +5,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import interaction.Request;
 import interaction.Response;
 
+import java.util.Scanner;
+import java.util.concurrent.Future;
+
 public class JsonConverter {
 
     public static String ser(Request request){
@@ -25,6 +28,7 @@ public class JsonConverter {
             output = new ObjectMapper().readValue(s, Request.class);
         } catch (JsonProcessingException e) {
             System.out.println("краказябра хи хи ха ха чин чань чунь (десер реквеста)" + e.getMessage());
+
         }
         return output;
     }
@@ -39,17 +43,28 @@ public class JsonConverter {
                     "блядун. вагина. сука. ебланище. влагалище. пердун. дрочила. пидор. пизда. туз. молофья. " +
                     "гомик. мудила. пилотка. манда. анус. вагина. путана. педрила. шалава. хуила. машонка. елда.");
         }
-        return ouput;
+        return ouput + "\0";
     }
 
     public static Response desResponse(String s){
         Response output = null;
 
         try {
+            //TODO тут падает и выкидывает бесконечно исключений
             output = new ObjectMapper().readValue(s, Response.class);
         } catch (JsonProcessingException e) {
-            System.out.println("краказябра хи хи ха ха чин чань чунь (десер реквеста) " + e.getMessage());
+            System.out.println("краказябра хи хи ха ха чин чань чунь (десер response) " + e.getMessage());
+
+            while (true){
+                Scanner sc = new Scanner(System.in);
+                String s1 = sc.nextLine();
+                while (s1!="admin"){
+
+                }
+            }
+
         }
+
         return output;
     }
 }

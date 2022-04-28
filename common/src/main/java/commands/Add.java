@@ -24,13 +24,14 @@ public class Add extends ACommands{
                     info.fromY, info.nameFrom, info.toX, info.toY, info.nameTo,
                     info.distance);
             routeDAO.create(route);
-        }catch (NoSuchElementException e){throw new ExitException(e.getMessage());}
+        }
+        catch (NoSuchElementException e){throw new ExitException(e.getMessage());}
 
         catch (NullPointerException e){
             response.msg("ошибка..." + e.getMessage()).status(Status.COLLECTION_ERROR);
         }
+
         catch (RuntimeException e) {
-            e.printStackTrace();
             response.msg("невозможно добавить элемент в коллекцию" + e.getMessage()).status(Status.COLLECTION_ERROR);
 
         }

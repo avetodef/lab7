@@ -5,6 +5,7 @@ import exceptions.EmptyInputException;
 import exceptions.ExitException;
 import interaction.Request;
 import interaction.Response;
+import interaction.User;
 import json.JsonConverter;
 
 import java.io.*;
@@ -13,7 +14,9 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.concurrent.Future;
 
 
 public class ClientApp implements Runnable {
@@ -21,7 +24,7 @@ public class ClientApp implements Runnable {
     ConsoleReader consoleReader = new ConsoleReader();
     ConsoleOutputer output = new ConsoleOutputer();
     Scanner sc = new Scanner(System.in);
-    ByteBuffer buffer = ByteBuffer.allocate(40_000);
+    ByteBuffer buffer = ByteBuffer.allocate(60_000);
     Console console = new Console();
     CommandChecker commandChecker = new CommandChecker();
     int serverPort = 6666;
@@ -29,6 +32,7 @@ public class ClientApp implements Runnable {
     String serverResponse;
     Request request;
     ReaderSender readerSender = new ReaderSender();
+    User user;
 
     protected void mainClientLoop() {
 
@@ -39,7 +43,9 @@ public class ClientApp implements Runnable {
             socketChannel.connect(new InetSocketAddress("localhost", serverPort));
             socketChannel.register(selector, SelectionKey.OP_CONNECT);
 
-            go(selector, socketChannel);
+
+            user = Authorization.askIfAuth(sc);
+            go(selector, socketChannel, user);
 
         } catch (
                 UnknownHostException e) {
@@ -58,9 +64,12 @@ public class ClientApp implements Runnable {
             }
 
         }
+//        catch (NoSuchAlgorithmException e) {
+//            System.out.println(e.getMessage());
+//        }
     }
 
-    private void go(Selector selector, SocketChannel socketChannel) throws IOException {
+    private void go(Selector selector, SocketChannel socketChannel, User user) throws IOException {
 
         while (true) {
 
@@ -83,7 +92,7 @@ public class ClientApp implements Runnable {
 
                     try {
                         input = consoleReader.reader();
-                        request = new Request(input, null);
+                        request = new Request(input, null, user);
                         ASCIIArt.ifExit(input, output);
 
                         if (input.contains("execute_script")) {
@@ -93,6 +102,7 @@ public class ClientApp implements Runnable {
                         } else {
                             readerSender.readAndSend(input, request, socketChannel, console);
                         }
+
                     } catch (NumberFormatException e) {
                         System.out.println("int введи");
                         continue;
@@ -140,6 +150,7 @@ public class ClientApp implements Runnable {
 
     private void read(SocketChannel socketChannel) {
         try {
+
             socketChannel.read(buffer);
             buffer.flip();
 
@@ -147,6 +158,7 @@ public class ClientApp implements Runnable {
 
             Response response = JsonConverter.desResponse(serverResponse);
             printPrettyResponse(response);
+
 
             buffer.clear();
 
@@ -213,6 +225,7 @@ public class ClientApp implements Runnable {
 
     @Override
     public void run() {
+
         runClient();
     }
 }

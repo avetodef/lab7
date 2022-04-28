@@ -2,7 +2,7 @@ package interaction;
 
 import java.io.Serializable;
 
-public class Response implements Serializable {
+public class Response  implements Serializable  {
     public String msg;
     public Status status;
 
@@ -33,4 +33,15 @@ public class Response implements Serializable {
                 ", status=" + status +
                 '}';
     }
+
+    public Response(String msg, Status status) {
+        this.msg = msg;
+        this.status = status;
+    }
+    public Response(){}
+    /**
+     * The main computation performed by this task.
+     *
+     * @return the result of the computation
+     */
 }
