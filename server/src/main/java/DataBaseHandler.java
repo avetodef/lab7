@@ -1,3 +1,5 @@
+import org.apache.commons.dbcp.BasicDataSource;
+
 import java.io.OutputStream;
 import java.sql.*;
 import java.util.logging.LogManager;
@@ -6,6 +8,7 @@ import java.util.logging.LogManager;
 /**
  * Класс обработки базы данных
  */
+
 public class DataBaseHandler {
 
     //TODO класс с методами работы с бд(удалили,вылетела и тд)
@@ -24,6 +27,7 @@ public class DataBaseHandler {
     public static final String ROUTE_TABLE_USER_ID_COLUMN = "user_id";
     //составляющие таблицы USER_TABLE
     public static final String USER_TABLE_ID_COLUMN = "id";
+    public static final String USER_TABLE_URL_COLUMN = "url";
     public static final String USER_TABLE_LOGIN_COLUMN = "login";
     public static final String USER_TABLE_PASSWORD_COLUMN = "password";
     //составляющие таблицы COORDINATES_TABLE
@@ -41,20 +45,28 @@ public class DataBaseHandler {
     public static final String LOCATION_TO_TABLE_Y_COLUMN = "to_y";
     public static final String LOCATION_TO_TABLE_NAME_COLUMN = "name_to";
 
+    /*static BasicDataSource basepool = new BasicDataSource();
+
+    static {
+        basepool.setURL("jdbc:postgresql://localhost:5432/postgres");
+        basepool.setLogin("postgres");
+        basepool.setPassword(getPassDEBUG());
+    }*/
     private final String JDBC_DRIVER = "org.postgresql.Driver";
+
     private String login = "postgres";
     private String URL = "jdbc:postgresql://localhost:5432/postgres";
     private String password = "lterm54201";
     private Connection connection;
     //TODO прописать соединение с базой данных
 
-    public DataBaseHandler(String URL, String password,String login) {
+    /*public DataBaseHandler(String URL, String password,String login) {
         this.URL = URL;
         this.password = password;
         this.login = login;
 
         connectToDataBase();
-    }
+    }*/
 
     //TODO подключить библиотеку логера,прописать метод forName(сейчас он в классе, так не надо)
     //public static Logger logger = LogManager.getLogger("ServerLogger");
