@@ -7,7 +7,12 @@ public class MainClient {
 
         ASCIIArt.greetings(new ConsoleOutputer());
         client.runClient();
+
     }
 
 }
+
+
+
+
 

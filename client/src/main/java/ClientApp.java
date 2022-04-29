@@ -1,6 +1,3 @@
-
-import commands.ACommands;
-import commands.CommandSaver;
 import console.ConsoleOutputer;
 import console.ConsoleReader;
 import console.Console;
@@ -8,8 +5,8 @@ import exceptions.EmptyInputException;
 import exceptions.ExitException;
 import interaction.Request;
 import interaction.Response;
+import interaction.User;
 import json.JsonConverter;
-import utils.RouteInfo;
 
 import java.io.*;
 import java.net.InetSocketAddress;
@@ -17,176 +14,160 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
+import java.util.concurrent.Future;
 
 
-public class ClientApp {
+public class ClientApp implements Runnable {
 
     ConsoleReader consoleReader = new ConsoleReader();
     ConsoleOutputer output = new ConsoleOutputer();
-    Scanner fromKeyboard = new Scanner(System.in);
-    ByteBuffer buffer = ByteBuffer.allocate(40_000);
+    Scanner sc = new Scanner(System.in);
+    ByteBuffer buffer = ByteBuffer.allocate(60_000);
     Console console = new Console();
     CommandChecker commandChecker = new CommandChecker();
     int serverPort = 6666;
+    List<String> input;
+    String serverResponse;
+    Request request;
+    ReaderSender readerSender = new ReaderSender();
+    User user;
 
     protected void mainClientLoop() {
-
-        List<String> input;
-        String serverResponse;
-        Request request;
 
         try {
             Selector selector = Selector.open();
             SocketChannel socketChannel = SocketChannel.open();
             socketChannel.configureBlocking(false);
-
             socketChannel.connect(new InetSocketAddress("localhost", serverPort));
             socketChannel.register(selector, SelectionKey.OP_CONNECT);
 
-            while (true) {
 
-                selector.select();
-                Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
+            user = Authorization.askIfAuth(sc);
+            go(selector, socketChannel, user);
 
-                while (iterator.hasNext()) {
-                    SelectionKey key = iterator.next();
-                    iterator.remove();
-                    SocketChannel client = (SocketChannel) key.channel();
-                    {
-                        if (key.isConnectable()) {
-
-
-                            if (client.isConnectionPending()) {
-                                try {
-                                    client.finishConnect();
-                                    output.printWhite("готов к работе с сервером");
-                                } catch (IOException e) {
-                                    System.out.println(e.getMessage());
-                                }
-                            }
-                            client.register(selector, SelectionKey.OP_WRITE);
-                            continue;
-                        }
-
-                        if (key.isWritable()) {
-
-                            try {
-
-                                input = consoleReader.reader();
-                                request = new Request(input, null);
-                                ASCIIArt.ifExit(input, output);
-
-                                if (input.contains("execute_script")) {
-                                    if (commandChecker.ifExecuteScript(input)) {
-                                        readAndSend(input, request, socketChannel);
-                                    } else break;
-                                } else {
-                                    readAndSend(input, request, socketChannel);
-                                }
-
-                            } catch (NumberFormatException e) {
-                                System.out.println("int введи");
-                                continue;
-                            } catch (NullPointerException e) {
-                                output.printRed("Введённой вами команды не существует. Попробуйте ввести другую команду.");
-                                continue;
-                            } catch (EmptyInputException e) {
-                                output.printRed(e.getMessage());
-                                continue;
-                            } catch (IndexOutOfBoundsException e) {
-                                output.printRed("брат забыл айди ввести походу");
-                                continue;
-                            } catch (IOException e) {
-                                System.out.println("writable problems: " + e.getMessage());
-                            }
-                            client.register(selector, SelectionKey.OP_READ);
-                            continue;
-                        }
-
-                        if (key.isReadable()) {
-
-                            try {
-                                socketChannel.read(buffer);
-                                buffer.flip();
-
-                                serverResponse = StandardCharsets.UTF_8.decode(buffer).toString().substring(2);
-
-                                Response response = JsonConverter.desResponse(serverResponse);
-                                printPrettyResponse(response);
-
-                                buffer.clear();
-
-                            } catch (RuntimeException e) {
-                                System.out.println("readable problems: " + e.getMessage());
-                                e.printStackTrace();
-                            }
-                            client.register(selector, SelectionKey.OP_WRITE);
-
-                        }
-                    }
-
-                }
-
-            }
-
-        } catch (UnknownHostException e) {
+        } catch (
+                UnknownHostException e) {
             System.err.println("неизвестный хост. порешай там в коде что нибудь ок?");
             System.exit(1);
-        }
-//        catch (ClosedChannelException e){
-//            System.err.println("зачем ломать прогу, значит будем прощаться");
-//            System.exit(0);
-//        }
-        catch (IOException exception) {
+        } catch (
+                IOException exception) {
             System.err.println("Сервер пока недоступен. Закончить работу клиента? (напишите {yes} или {no})?");
-
-            String answer;
+            String answer = " ";
             try {
-                while (!(answer = fromKeyboard.nextLine()).equals("no")) {
-                    switch (answer) {
-                        case "":
-                            break;
-                        case "yes":
-                            System.exit(0);
-                            break;
-                        default:
-                            System.out.println("скажи пожалуйста.... yes или no");
-                    }
-                }
-                System.out.println("жди...");
-            }catch (NoSuchElementException e){
+
+                serverUpal(answer);
+
+            } catch (NoSuchElementException e) {
                 throw new ExitException("poka");
-        }
-        }
-    }
-
-    private void readAndSend(List<String> input, Request request, SocketChannel socketChannel) throws IOException {
-        boolean flag = true;
-        if (CommandSaver.checkCommand(input)) {
-
-            ACommands command = CommandSaver.getCommand(input);
-            if (command.isIdAsker()) {
-                if (input.size() != 2 || Integer.parseInt(input.get(1)) < 0 || input.get(1).contains(".") || input.get(1).contains(",")) {
-                    System.err.println("введи нормальный айди");
-                    flag = false;
-
-                }
             }
-            if (flag) {
-                if (command.isAsker()) {
-                    RouteInfo info = console.info();
-                    request.setInfo(info);
+
+        }
+//        catch (NoSuchAlgorithmException e) {
+//            System.out.println(e.getMessage());
+//        }
+    }
+
+    private void go(Selector selector, SocketChannel socketChannel, User user) throws IOException {
+
+        while (true) {
+
+            selector.select();
+            Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
+
+            while (iterator.hasNext()) {
+                SelectionKey key = iterator.next();
+                iterator.remove();
+                SocketChannel client = (SocketChannel) key.channel();
+
+                if (key.isConnectable()) {
+
+                    connect(client);
+                    client.register(selector, SelectionKey.OP_WRITE);
+                    continue;
                 }
 
-                socketChannel.write(StandardCharsets.UTF_8.encode(JsonConverter.ser(request)));
-                System.out.println("sending to the server...");
-            } else System.out.println("ну значит не отправлю на сервер твою команду. заново вводи");
+                if (key.isWritable()) {
 
-        } else
-            throw new NullPointerException("Введённой вами команды не существует. Попробуйте ввести другую команду.");
+                    try {
+                        input = consoleReader.reader();
+                        request = new Request(input, null, user);
+                        ASCIIArt.ifExit(input, output);
 
+                        if (input.contains("execute_script")) {
+                            if (commandChecker.ifExecuteScript(input)) {
+                                readerSender.readAndSend(input, request, socketChannel, console);
+                            } else break;
+                        } else {
+                            readerSender.readAndSend(input, request, socketChannel, console);
+                        }
+
+                    } catch (NumberFormatException e) {
+                        System.out.println("int введи");
+                        continue;
+                    } catch (NullPointerException e) {
+                        output.printRed("Введённой вами команды не существует. Попробуйте ввести другую команду.");
+                        continue;
+                    } catch (EmptyInputException e) {
+                        output.printRed(e.getMessage());
+                        continue;
+                    } catch (IndexOutOfBoundsException e) {
+                        output.printRed("брат забыл айди ввести походу");
+                        continue;
+                    } catch (IOException e) {
+                        System.out.println("writable problems: " + e.getMessage());
+                    }
+
+                    client.register(selector, SelectionKey.OP_READ);
+                    continue;
+                }
+
+                if (key.isReadable()) {
+
+                    read(socketChannel);
+
+                    client.register(selector, SelectionKey.OP_WRITE);
+
+                }
+
+            }
+
+        }
     }
+
+    private void connect(SocketChannel client) {
+        if (client.isConnectionPending()) {
+            try {
+                client.finishConnect();
+                output.printWhite("готов к работе с сервером");
+            } catch (IOException e) {
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+
+    private void read(SocketChannel socketChannel) {
+        try {
+
+            socketChannel.read(buffer);
+            buffer.flip();
+
+            serverResponse = StandardCharsets.UTF_8.decode(buffer).toString().substring(2);
+
+            Response response = JsonConverter.desResponse(serverResponse);
+            printPrettyResponse(response);
+
+
+            buffer.clear();
+
+        } catch (IOException e) {
+            System.out.println("readable problems: " + e.getMessage());
+
+        }
+    }
+
 
     protected void runClient() {
 
@@ -197,8 +178,8 @@ public class ClientApp {
                 System.err.println(e.getMessage());
                 break;
             } catch (RuntimeException e) {
-                System.err.println("ошибка.....: ");
-                e.printStackTrace();
+                System.err.println("ошибка.....: " + e.getMessage());
+
             }
         }
 
@@ -215,5 +196,36 @@ public class ClientApp {
         }
     }
 
+    private void serverUpal(String answer) {
+        while (!(answer = sc.nextLine()).equals("no")) {
+            switch (answer) {
+                case "":
+                    break;
+                case "yes":
+                    System.exit(0);
+                    break;
+                default:
+                    System.out.println("скажи пожалуйста.... yes или no");
+            }
+        }
+        System.out.println("жди...");
+    }
 
+    /**
+     * When an object implementing interface {@code Runnable} is used
+     * to create a thread, starting the thread causes the object's
+     * {@code run} method to be called in that separately executing
+     * thread.
+     * <p>
+     * The general contract of the method {@code run} is that it may
+     * take any action whatsoever.
+     *
+     * @see Thread#run()
+     */
+
+    @Override
+    public void run() {
+
+        runClient();
+    }
 }

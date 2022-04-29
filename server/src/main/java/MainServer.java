@@ -7,8 +7,7 @@ public class MainServer {
         try {
             server.mainServerLoop();
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            System.out.println(" io moment");
         }
-
     }
 }

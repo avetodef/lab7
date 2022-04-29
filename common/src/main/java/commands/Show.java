@@ -4,6 +4,11 @@ package commands;
 import dao.RouteDAO;
 import interaction.Response;
 import interaction.Status;
+import org.bouncycastle.util.encoders.Hex;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * Класс команды SHOW, предназначенный для вывода коллекции на консоль
@@ -21,4 +26,5 @@ public class Show extends ACommands {
 
         return response;
     }
+
 }
