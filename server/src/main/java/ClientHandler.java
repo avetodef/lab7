@@ -2,17 +2,14 @@ import commands.Save;
 import console.ConsoleOutputer;
 import dao.RouteDAO;
 import file.FileManager;
-import interaction.Request;
 import interaction.Response;
 import interaction.Status;
 
 import java.io.*;
 import java.net.Socket;
 import java.util.NoSuchElementException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class ClientHandler implements Runnable {
 
@@ -20,12 +17,20 @@ public class ClientHandler implements Runnable {
     private final ConsoleOutputer output = new ConsoleOutputer();
     private final FileManager manager = new FileManager();
     private final RouteDAO dao = manager.read();
+    private final ReentrantLock lock = new ReentrantLock();
+    private Future<String> clientMessage;
 
-    private ForkJoinPool forkJoinPool = ForkJoinPool.commonPool();
-    private ExecutorService fixedThreadPool = Executors.newFixedThreadPool(2);
+    //private final ForkJoinPool forkJoinPool = ForkJoinPool.commonPool();
+    private final ForkJoinPool forkJoinPool = new ForkJoinPool(Runtime.getRuntime().availableProcessors());
+    private final ExecutorService fixedThreadPool = Executors.newFixedThreadPool(10);
 
     public ClientHandler(Socket clientSocket) {
         this.clientSocket = clientSocket;
+    }
+
+    @Override
+    public String toString() {
+        return "" + clientMessage;
     }
 
     @Override
@@ -49,14 +54,32 @@ public class ClientHandler implements Runnable {
                     output.printWhite("готов принимать запросы от клиента");
                     //TODO через fixed thread pool сделать чтение
 
-                    String clientMessage = new RequestReader(socketInputStream).read();
+                    lock.lock();
+                    try {
+                        String clientMessage = new RequestReader(socketInputStream).call();
+                        //clientMessage = fixedThreadPool.submit(new RequestReader(socketInputStream));
+
+
+                        Response serverResponse = forkJoinPool.invoke(new RequestProcessor(clientMessage.toString(), dao));
+
+                        this.fixedThreadPool.execute(new ResponseSender(clientSocket, socketOutputStream, dataOutputStream, serverResponse));
+
+                    }
+                    catch (RuntimeException e){
+                        System.out.println(e.getMessage());
+                    } catch (Exception e) {
+                    } finally {
+                        lock.unlock();
+                    }
+                      //fixedThreadPool.submit(new RequestReader(socketInputStream)); - тут падает, на рандоме обрезает реквест почему то...
 
 //                    this.fixedThreadPool.execute(new RequestReader(socketInputStream));
-                    fixedThreadPool.submit(new RequestReader(socketInputStream));
+
 //                    Future<String> clientMessage = fixedThreadPool.submit(()   ->
 //                            new String(socketInputStream.readAllBytes().toString()));
-                    Response serverResponse = forkJoinPool.invoke(new RequestProcessor(clientMessage, dao));
-                    this.fixedThreadPool.execute(new ResponseSender(clientSocket, socketOutputStream, dataOutputStream, serverResponse));
+
+                    //Response serverResponse = forkJoinPool.invoke(new RequestProcessor(clientMessage, dao));
+//                    this.fixedThreadPool.execute(new ResponseSender(clientSocket, socketOutputStream, dataOutputStream, serverResponse));
 
                     Save.execute(dao);
 

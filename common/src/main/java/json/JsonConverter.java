@@ -25,9 +25,11 @@ public class JsonConverter {
         Request output = null;
 
         try {
+
             output = new ObjectMapper().readValue(s, Request.class);
         } catch (JsonProcessingException e) {
             System.out.println("краказябра хи хи ха ха чин чань чунь (десер реквеста)" + e.getMessage());
+            e.printStackTrace();
 
         }
         return output;

@@ -7,6 +7,7 @@ public class MainClient {
 
         ASCIIArt.greetings(new ConsoleOutputer());
         client.runClient();
+//        new Thread(client).start();
 
     }
 

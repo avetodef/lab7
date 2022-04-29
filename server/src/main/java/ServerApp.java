@@ -4,17 +4,15 @@ import file.FileManager;
 import interaction.Response;
 import interaction.Status;
 import utils.IdGenerator;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
 
 
 public class ServerApp {
 
-    static Scanner sc = new Scanner(System.in);
+
     FileManager manager = new FileManager();
     RouteDAO dao = manager.read();
     ConsoleOutputer output = new ConsoleOutputer();
@@ -35,21 +33,22 @@ public class ServerApp {
 
             while (true) {
 
-                try {
+                //try {
 
-                    Socket client = serverSocket.accept();
-                    output.printPurple("Клиент подключился ");
-                    ClientHandler clientHandler = new ClientHandler(client);
-                    new Thread(clientHandler).start();
+                Socket client = serverSocket.accept();
+                output.printPurple("Клиент подключился ");
+                ClientHandler clientHandler = new ClientHandler(client);
+                new Thread(clientHandler).start();
 
-                } catch (SocketException e) {
-                    System.err.println("клиент упал. подожди немного. закончить работу сервера? yes или no?");
-                    try {
-                        clientUpal();
-                    } catch (NoSuchElementException exception) {
-                        System.out.println("кнтрл д момент...");
-                    }
-                }
+                //}
+//                catch (SocketException e) {
+//                    System.err.println("клиент упал. подожди немного. закончить работу сервера? yes или no?");
+//                    try {
+//                        clientUpal();
+//                    } catch (NoSuchElementException exception) {
+//                        System.out.println("кнтрл д момент...");
+//                    }
+//                }
 
             }
 
@@ -62,26 +61,26 @@ public class ServerApp {
     }
 
 
-    protected static void clientUpal() {
-        try {
-            String answer;
-            while (!(answer = sc.nextLine()).equals("no")) {
-                switch (answer) {
-                    case "":
-                        break;
-                    case "yes":
-                        System.exit(0);
-                        break;
-                    default:
-                        System.out.println("скажи пожалуйста.... yes или no");
-                }
-            }
-            System.err.println("ну подожди еще значит");
-        }
-        catch (IndexOutOfBoundsException e){
-            System.out.println(e.getClass() + " " + e.getMessage());
-        }
-
-    }
+//    protected static void clientUpal() {
+//        try {
+//            String answer;
+//            while (!(answer = sc.nextLine()).equals("no")) {
+//                switch (answer) {
+//                    case "":
+//                        break;
+//                    case "yes":
+//                        System.exit(0);
+//                        break;
+//                    default:
+//                        System.out.println("скажи пожалуйста.... yes или no");
+//                }
+//            }
+//            System.err.println("ну подожди еще значит");
+//        }
+//        catch (IndexOutOfBoundsException e){
+//            System.out.println(e.getClass() + " " + e.getMessage());
+//        }
+//
+//    }
 
 }

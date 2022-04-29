@@ -18,7 +18,7 @@ public class Add extends ACommands{
     {
         isAsker = true;
     }
-    public Response execute(RouteDAO routeDAO) {
+    public synchronized Response execute(RouteDAO routeDAO) {
         try {
             Route route = new Route(info.name, info.x, info.y, info.fromX,
                     info.fromY, info.nameFrom, info.toX, info.toY, info.nameTo,

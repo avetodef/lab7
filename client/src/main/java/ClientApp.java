@@ -44,8 +44,7 @@ public class ClientApp implements Runnable {
             socketChannel.register(selector, SelectionKey.OP_CONNECT);
 
 
-            user = Authorization.askIfAuth(sc);
-            go(selector, socketChannel, user);
+            go(selector, socketChannel);
 
         } catch (
                 UnknownHostException e) {
@@ -64,12 +63,10 @@ public class ClientApp implements Runnable {
             }
 
         }
-//        catch (NoSuchAlgorithmException e) {
-//            System.out.println(e.getMessage());
-//        }
     }
 
-    private void go(Selector selector, SocketChannel socketChannel, User user) throws IOException {
+    private void go(Selector selector, SocketChannel socketChannel) throws IOException {
+        user = Authorization.askIfAuth(sc);
 
         while (true) {
 

@@ -11,14 +11,14 @@ public class Authorization {
 
     protected static User askIfAuth(Scanner sc) {
         try {
-            System.out.println("впервые тут? {Y/N}");
+            System.out.println("впервые тут? {y/n}");
             String answ = " ";
 
             while (true) {
                 answ = sc.nextLine();
                 switch (answ) {
 
-                    case ("Y") -> {
+                    case ("y") -> {
                         System.out.println("придумай юзернейм");
                         String username = sc.nextLine();
                         System.out.println("теперь пароль");
@@ -27,7 +27,7 @@ public class Authorization {
 
                         return new User(username, PasswordHandler.encode(password));
                     }
-                    case ("N") -> {
+                    case ("n") -> {
                         System.out.println("введи юзернейм");
                         String newUsername = sc.nextLine();
                         System.out.println("теперь пароль");
@@ -36,23 +36,20 @@ public class Authorization {
 
                         return new User(newUsername, PasswordHandler.encode(newPassword));
                     }
-                    case "exit"->{
+                    case "exit" -> {
                         List<String> input = new ArrayList<>();
                         input.add("exit");
                         ASCIIArt.ifExit(input, new ConsoleOutputer());
                     }
-                    case "admin"-> {
-                        System.out.println("проходи королева");
-                        return new User("1", PasswordHandler.encode("1"));
+                    case "admin" -> {
+                        return new User("dfgdgdfgdfgdg", PasswordHandler.encode("6426429fdfhadyf723gfksdy374kgs732jfs8ergf9w4f"));
                     }
 
-                    default ->
-                        System.out.println("скажи пожалуйста... Y/N. Или ты хочешь уйти? Тогда пиши exit");
+                    default -> System.out.println("скажи пожалуйста... Y/N. Или ты хочешь уйти? Тогда пиши exit");
 
                 }
             }
-        }
-        catch (NoSuchElementException e){
+        } catch (NoSuchElementException e) {
             throw new ExitException("ewwww you are so cringe");
         }
     }
