@@ -25,9 +25,14 @@ public class JsonConverter {
         Request output = null;
 
         try {
+            //TODO тут жестоко падает причем первя команда нормально работает
+            //TODO я ВООБЩЕ не понимаю как это работает. нечетные команды он читает, четные не читает.
+
             output = new ObjectMapper().readValue(s, Request.class);
+
         } catch (JsonProcessingException e) {
             System.out.println("краказябра хи хи ха ха чин чань чунь (десер реквеста)" + e.getMessage());
+
 
         }
         return output;
@@ -50,7 +55,7 @@ public class JsonConverter {
         Response output = null;
 
         try {
-            //TODO тут падает и выкидывает бесконечно исключений
+
             output = new ObjectMapper().readValue(s, Response.class);
         } catch (JsonProcessingException e) {
             System.out.println("краказябра хи хи ха ха чин чань чунь (десер response) " + e.getMessage());

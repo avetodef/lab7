@@ -1,6 +1,7 @@
 import commands.ACommands;
 import commands.CommandSaver;
 import commands.ExecuteReader;
+import commands.VideoRzhaka;
 import console.ConsoleOutputer;
 import dao.RouteDAO;
 import exceptions.EmptyInputException;
@@ -16,7 +17,13 @@ import java.util.List;
 
 public class CommandChecker extends ACommands {
     ConsoleOutputer output = new ConsoleOutputer();
-
+    protected boolean ifVideoRzhaka(List<String> inp){
+        if (inp.contains("video_rzhaka")){
+            new Thread(new VideoRzhaka()).start();
+            return true;
+        }
+        return false;
+    }
     public boolean ifExecuteScript(List<String> inp) {
         boolean flag = false;
 

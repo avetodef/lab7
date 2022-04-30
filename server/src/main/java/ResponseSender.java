@@ -9,10 +9,10 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 public class ResponseSender implements Runnable {
-    private Socket clientSocket;
-    private OutputStream outputStream;
-    private DataOutputStream dataOutputStream;
-    private Response response;
+    private final Socket clientSocket;
+    private final OutputStream outputStream;
+    private final DataOutputStream dataOutputStream;
+    private final Response response;
 
     public ResponseSender(Socket clientSocket, OutputStream outputStream, DataOutputStream dataOutputStream, Response response) {
         this.clientSocket = clientSocket;
@@ -35,7 +35,9 @@ public class ResponseSender implements Runnable {
     @Override
     public void run() {
         try {
+
             dataOutputStream.writeUTF(JsonConverter.serResponse(response));
+
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }

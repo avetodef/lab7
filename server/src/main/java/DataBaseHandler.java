@@ -52,7 +52,6 @@ public class DataBaseHandler {
         this.URL = URL;
         this.password = password;
         this.login = login;
-
         connectToDataBase();
     }
 

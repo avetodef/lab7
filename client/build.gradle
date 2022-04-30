@@ -2,6 +2,15 @@ plugins {
     id 'java'
 }
 
+jar {
+    manifest {
+        attributes "Main-Class": "java/MainClient.java"
+    }
+
+    from {
+        configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
 
 repositories {
     mavenCentral()
@@ -10,6 +19,7 @@ repositories {
 dependencies {
     implementation project(":common")
     implementation 'org.apache.logging.log4j:log4j-api:2.17.2'
+
 }
 
 test {

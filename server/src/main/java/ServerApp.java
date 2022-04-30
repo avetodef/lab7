@@ -43,12 +43,7 @@ public class ServerApp {
                     new Thread(clientHandler).start();
 
                 } catch (SocketException e) {
-                    System.err.println("клиент упал. подожди немного. закончить работу сервера? yes или no?");
-                    try {
-                        clientUpal();
-                    } catch (NoSuchElementException exception) {
-                        System.out.println("кнтрл д момент...");
-                    }
+                    System.err.println("клиент упал. подожди немного");
                 }
 
             }
@@ -61,27 +56,5 @@ public class ServerApp {
         }
     }
 
-
-    protected static void clientUpal() {
-        try {
-            String answer;
-            while (!(answer = sc.nextLine()).equals("no")) {
-                switch (answer) {
-                    case "":
-                        break;
-                    case "yes":
-                        System.exit(0);
-                        break;
-                    default:
-                        System.out.println("скажи пожалуйста.... yes или no");
-                }
-            }
-            System.err.println("ну подожди еще значит");
-        }
-        catch (IndexOutOfBoundsException e){
-            System.out.println(e.getClass() + " " + e.getMessage());
-        }
-
-    }
 
 }

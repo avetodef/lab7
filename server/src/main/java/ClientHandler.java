@@ -2,7 +2,6 @@ import commands.Save;
 import console.ConsoleOutputer;
 import dao.RouteDAO;
 import file.FileManager;
-import interaction.Request;
 import interaction.Response;
 import interaction.Status;
 
@@ -12,7 +11,7 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
-import java.util.concurrent.Future;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class ClientHandler implements Runnable {
 
@@ -22,7 +21,8 @@ public class ClientHandler implements Runnable {
     private final RouteDAO dao = manager.read();
 
     private ForkJoinPool forkJoinPool = ForkJoinPool.commonPool();
-    private ExecutorService fixedThreadPool = Executors.newFixedThreadPool(2);
+    private ExecutorService fixedThreadPool = Executors.newFixedThreadPool(3);
+    private ReentrantLock lock = new ReentrantLock();
 
     public ClientHandler(Socket clientSocket) {
         this.clientSocket = clientSocket;
@@ -47,34 +47,29 @@ public class ClientHandler implements Runnable {
 
                 try {
                     output.printWhite("готов принимать запросы от клиента");
-                    //TODO через fixed thread pool сделать чтение
 
-                    String clientMessage = new RequestReader(socketInputStream).read();
+                    String clientMessage = this.fixedThreadPool.submit(new RequestReader(socketInputStream)).get();
 
-//                    this.fixedThreadPool.execute(new RequestReader(socketInputStream));
-                    fixedThreadPool.submit(new RequestReader(socketInputStream));
-//                    Future<String> clientMessage = fixedThreadPool.submit(()   ->
-//                            new String(socketInputStream.readAllBytes().toString()));
                     Response serverResponse = forkJoinPool.invoke(new RequestProcessor(clientMessage, dao));
+
                     this.fixedThreadPool.execute(new ResponseSender(clientSocket, socketOutputStream, dataOutputStream, serverResponse));
 
                     Save.execute(dao);
 
-
                 } catch (NullPointerException e) {
-                    errorResponse.setMsg("Введённой вами команды не существует. Попробуйте ввести другую команду."
-                                    + e.getLocalizedMessage() );
+                    errorResponse.setMsg("Введённой вами команды не существует. Попробуйте ввести другую команду.");
 
                     this.fixedThreadPool.execute(new ResponseSender(clientSocket, socketOutputStream, dataOutputStream, errorResponse));
 
                 } catch (NoSuchElementException e) {
                     //throw new ExitException("кнтрл д момент...");
+                } catch (Exception e) {
+                    System.out.println(" ");
                 }
             }
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
     }
-
 }
 

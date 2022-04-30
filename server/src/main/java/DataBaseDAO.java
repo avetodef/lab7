@@ -31,10 +31,6 @@ public class DataBaseDAO implements DAO {
             + "SET" + DataBaseHandler.ROUTE_TABLE_USER_ID_COLUMN + "=?"
             + "WHERE" + DataBaseHandler.USER_TABLE_ID_COLUMN + "=?";
 
-
-
-
-
     @Override
     public void create(Route route) {
     }

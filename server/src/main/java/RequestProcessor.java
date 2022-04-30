@@ -1,5 +1,6 @@
 import commands.ACommands;
 import commands.CommandSaver;
+import commands.VideoRzhaka;
 import dao.RouteDAO;
 import interaction.Request;
 import interaction.Response;
@@ -12,7 +13,7 @@ public class RequestProcessor extends RecursiveTask<Response>{
 
     private final String msg;
     private final RouteDAO dao;
-    //private final Future<String> msg;
+
 
 
     public RequestProcessor(String msg, RouteDAO dao) {
@@ -27,12 +28,13 @@ public class RequestProcessor extends RecursiveTask<Response>{
      */
     @Override
     protected Response compute() {
-        return executeCommand(CommandSaver.getCommand(getRequestFromString(msg.toString()).getArgs()));
+        return executeCommand(CommandSaver.getCommand(getRequestFromString(msg).getArgs()));
     }
 
     private Response executeCommand(ACommands command) {
         return command.execute(dao);
     }
+
     private Request getRequestFromString(String msg){
         return JsonConverter.des(msg);
     }
