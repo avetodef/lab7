@@ -13,14 +13,14 @@ import java.util.List;
 /**
  * Класс, который позволяет осуществлять корректную запись данных в файл
  */
-
 public class FileManager {
+
 
     private static String directory = System.getenv().get("collection.csv");
     private static String nameOfFile = System.getenv().get("collection.csv");
     private static final String TEMP_FILE = "D:/collection_temp.csv";
     File file = new File(directory);
-    //pretty pink idea 
+
     /**
      * Метод записи данных о коллекции в файл
      *
@@ -38,9 +38,6 @@ public class FileManager {
 
             String toBeWritten = ("id,name,x,y,date,fromX,fromX,fromName,toX,toY,toName,distance"
                     + System.lineSeparator() + routeDAO.getDescription());
-//            String toBeWritten = ("id,name,coordinates={x,y,},date,location={fromX,fromX,fromName},location={toX,toY,toName},distance"
-//                    + System.lineSeparator() + routeDAO.getDescription());
-
             fos.write(toBeWritten.getBytes(StandardCharsets.UTF_8));
 
             fos.flush();
@@ -68,7 +65,7 @@ public class FileManager {
                 }
 //                System.out.println("Файл не создан");
             } catch (IOException e) {
-                System.out.println(e.getMessage());
+                e.printStackTrace();
             }
         }
 

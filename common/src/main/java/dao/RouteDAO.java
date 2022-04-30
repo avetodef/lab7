@@ -15,7 +15,6 @@ public class RouteDAO implements DAO {
 
     public String initDate = ZonedDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy : HH.mm.ss"));
 
-
     public void create(Route route) {
         collection.add(route);
     }
@@ -26,6 +25,7 @@ public class RouteDAO implements DAO {
      * @param id        - id элемента, который пользователь хочет обновить
      * @param routeInfo - характеристики, свойственные элементы коллекции
      */
+
     public boolean update(int id, RouteInfo routeInfo) {
         for (Route route : collection) {
             if (route.getId() == id) {

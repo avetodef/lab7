@@ -13,46 +13,45 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import java.io.File;
 
-
-public class VideoRzhaka extends Application implements Runnable
-{
-
-    @Override
+public class VideoRzhaka extends Application implements Runnable  {
     public void start(Stage primaryStage) {
-        String workingDir = System.getProperty("user.dir");
-        final File f = new File(workingDir, "video.mp4");
+        try {
+            String workingDir = System.getProperty("user.dir");
+            final File f = new File(workingDir, "video.mp4");
 
-        final Media m = new Media(f.toURI().toString());
-        final MediaPlayer mp = new MediaPlayer(m);
-        final MediaView mv = new MediaView(mp);
+            final Media m = new Media(f.toURI().toString());
+            final MediaPlayer mp = new MediaPlayer(m);
+            final MediaView mv = new MediaView(mp);
 
-        final DoubleProperty width = mv.fitWidthProperty();
-        final DoubleProperty height = mv.fitHeightProperty();
+            final DoubleProperty width = mv.fitWidthProperty();
+            final DoubleProperty height = mv.fitHeightProperty();
 
-        width.bind(Bindings.selectDouble(mv.sceneProperty(), "width"));
-        height.bind(Bindings.selectDouble(mv.sceneProperty(), "height"));
+            width.bind(Bindings.selectDouble(mv.sceneProperty(), "width"));
+            height.bind(Bindings.selectDouble(mv.sceneProperty(), "height"));
 
-        mv.setPreserveRatio(true);
+            mv.setPreserveRatio(true);
 
-        StackPane root = new StackPane();
-        root.getChildren().add(mv);
+            StackPane root = new StackPane();
+            root.getChildren().add(mv);
 
-        final Scene scene = new Scene(root, 500, 740);
-        scene.setFill(Color.BLACK);
+            final Scene scene = new Scene(root, 500, 740);
+            scene.setFill(Color.BLACK);
 
-        primaryStage.setScene(scene);
-        //primaryStage.setTitle("Full Screen Video Player");
-        //primaryStage.setFullScreen(true);
-        primaryStage.show();
+            primaryStage.setScene(scene);
+            //primaryStage.setTitle("Full Screen Video Player");
+            //primaryStage.setFullScreen(true);
+            primaryStage.show();
 
-        mp.play();
+            mp.play();
+
+        } catch (Exception e){
+            System.out.println(" ");
+        }
     }
-//    public static void main(String[] args) {
-//        launch(args);
-//    }
 
     @Override
     public void run() {
-        start(new Stage());
+        launch();
     }
+
 }

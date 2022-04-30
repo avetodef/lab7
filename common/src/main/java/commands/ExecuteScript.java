@@ -4,9 +4,9 @@ package commands;
 import dao.RouteDAO;
 import exceptions.EmptyInputException;
 import file.FileManager;
+import interaction.Request;
 import interaction.Response;
 import interaction.Status;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
@@ -20,8 +20,12 @@ import java.util.List;
  */
 
 public class ExecuteScript extends ACommands {
-    FileManager manager = new FileManager();
-    RouteDAO dao = manager.read();
+
+    private final FileManager manager = new FileManager();
+    private final RouteDAO dao = manager.read();
+
+    public ExecuteScript() {
+    }
 
     public Response execute(RouteDAO routeDAO) {
 

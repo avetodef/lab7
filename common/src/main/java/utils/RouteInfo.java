@@ -35,4 +35,22 @@ public class RouteInfo {
     public RouteInfo(int i, String name, double v, double parseDouble, ZonedDateTime parse, double aDouble, long l, String fromName, int parseInt, long parseLong, String toName, int anInt) {}
 
     public RouteInfo() {}
+
+    @Override
+    public String toString() {
+        return "RouteInfo{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", x=" + x +
+                ", y=" + y +
+                ", creationDate='" + creationDate + '\'' +
+                ", fromX=" + fromX +
+                ", fromY=" + fromY +
+                ", nameFrom='" + nameFrom + '\'' +
+                ", toX=" + toX +
+                ", toY=" + toY +
+                ", nameTo='" + nameTo + '\'' +
+                ", distance=" + distance +
+                '}';
+    }
 }

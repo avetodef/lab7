@@ -14,14 +14,11 @@ import java.util.Scanner;
 
 public class ServerApp {
 
-    static Scanner sc = new Scanner(System.in);
-    FileManager manager = new FileManager();
-    RouteDAO dao = manager.read();
     ConsoleOutputer output = new ConsoleOutputer();
 
     protected void mainServerLoop() throws IOException {
 
-        IdGenerator.reloadId(dao);
+
         Response errorResponse = new Response();
         errorResponse.setStatus(Status.SERVER_ERROR);
 
