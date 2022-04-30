@@ -5,6 +5,7 @@ import dao.RouteDAO;
 import interaction.Request;
 import interaction.Response;
 import json.JsonConverter;
+import utils.RouteInfo;
 
 import java.util.concurrent.Future;
 import java.util.concurrent.RecursiveTask;
@@ -13,8 +14,6 @@ public class RequestProcessor extends RecursiveTask<Response>{
 
     private final String msg;
     private final RouteDAO dao;
-
-
 
     public RequestProcessor(String msg, RouteDAO dao) {
         this.msg = msg;
@@ -28,15 +27,15 @@ public class RequestProcessor extends RecursiveTask<Response>{
      */
     @Override
     protected Response compute() {
-        return executeCommand(CommandSaver.getCommand(getRequestFromString(msg).getArgs()));
-    }
+        ACommands command = CommandSaver.getCommand(JsonConverter.des(msg).getArgs());
+        RouteInfo info = JsonConverter.des(msg).getInfo();
+        command.setInfo(info);
 
-    private Response executeCommand(ACommands command) {
         return command.execute(dao);
+        //TODO мне кажется что не передается инфо вместе с аргументами.
     }
 
-    private Request getRequestFromString(String msg){
-        return JsonConverter.des(msg);
-    }
+
+
 
 }

@@ -19,6 +19,7 @@ public class ReaderSender {
     protected void readAndSend(List<String> input, Request request, SocketChannel socketChannel, Console console) throws
             IOException {
         boolean flag = true;
+
         if (CommandSaver.checkCommand(input)) {
 
             ACommands command = CommandSaver.getCommand(input);
@@ -26,12 +27,11 @@ public class ReaderSender {
                 if (input.size() != 2 || Integer.parseInt(input.get(1)) < 0 || input.get(1).contains(".") || input.get(1).contains(",")) {
                     System.err.println("введи нормальный айди");
                     flag = false;
-
                 }
             }
             if (flag) {
                 if (command.isAsker()) {
-                    RouteInfo info = console.info();
+                    RouteInfo info = console.info(); //TODO рут инфо создался с кайфом. тут все ок
                     request.setInfo(info);
                 }
 

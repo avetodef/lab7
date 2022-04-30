@@ -63,15 +63,11 @@ public class ClientApp implements Runnable {
             } catch (NoSuchElementException e) {
                 throw new ExitException("poka");
             }
-
         }
-//        catch (NoSuchAlgorithmException e) {
-//            System.out.println(e.getMessage());
-//        }
     }
 
     private void go(Selector selector, SocketChannel socketChannel, User user) throws IOException {
-        //user = Authorization.askIfAuth(sc);
+
         while (true) {
 
             selector.select();
@@ -93,19 +89,22 @@ public class ClientApp implements Runnable {
 
                     try {
                         input = consoleReader.reader();
+
                         request = new Request(input, null, user);
 
                         ASCIIArt.ifExit(input, output);
 
+                        if (input.contains("mega_rzhaka"))
+                            new Thread(new VideoRzhaka()).start();
+
                         if (input.contains("execute_script")) {
+
                             if (commandChecker.ifExecuteScript(input)) {
                                 readerSender.readAndSend(input, request, socketChannel, console);
-                            } else break;
+                            }
+                            else break;
+
                         } else {
-//                            if (input.contains("video_rzhaka")){
-//                                commandChecker.ifVideoRzhaka(input);
-//                            }
-//                            else
                             readerSender.readAndSend(input, request, socketChannel, console);
                         }
 
@@ -175,8 +174,6 @@ public class ClientApp implements Runnable {
             buffer.clear();
 
         } catch (IOException e) {
-            //System.out.println("readable problems: " + e.getMessage());
-
         }
     }
 
@@ -191,7 +188,6 @@ public class ClientApp implements Runnable {
                 break;
             } catch (RuntimeException e) {
                 System.err.println("ошибка.....: " + e.getMessage());
-
             }
         }
 

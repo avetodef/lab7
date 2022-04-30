@@ -12,16 +12,18 @@ public class Help extends ACommands {
 
     public Response execute(RouteDAO routeDAO) {
 
-       response.msg("help : вывести справку по доступным командам " + System.lineSeparator() +
+       response.msg("help : вывести справку по доступным командам " +
+                       System.lineSeparator() +
                "info: вывести в стандартный поток вывода информацию о коллекции (тип, дата инициализации, количество элементов и т.д.) "
                + System.lineSeparator() +
                "show: " + "вывести в стандартный поток вывода все элементы коллекции в строковом представлении "
                + System.lineSeparator() +
-               "add {element} : " + "добавить новый элемент в коллекцию " + System.lineSeparator() +
-               "update id {element} : " + "обновить значение элемента коллекции, id которого равен заданному " + System.lineSeparator() +
+               "add {element} : " + "добавить новый элемент в коллекцию " +
+                       System.lineSeparator() +
+               "update id {element} : " + "обновить значение элемента коллекции, id которого равен заданному " +
+                       System.lineSeparator() +
                "remove_by_id id :" + "удалить элемент из коллекции по его id "
                + System.lineSeparator() +
-
                "clear :  " + "очистить коллекцию "
                + System.lineSeparator() +
                "save: " + "сохранить колекцию в файл "
@@ -44,8 +46,11 @@ public class Help extends ACommands {
                + System.lineSeparator() +
                "print_descending_distance :  вывести значения поля distance всех элементов в порядке убывания "
                + System.lineSeparator() +
-               "rzhaka: новая попытка защиты, новый сюрприз специально только для alex_egosin!!!").
+               "rzhaka: новая попытка защиты, новый сюрприз специально только для alex_egosin!!!" +
+               System.lineSeparator() +
+               "mega_rzhaka: " + "ультра мега супер ржака. просто супер").
                status(Status.OK);
+
        return response;
     }
 

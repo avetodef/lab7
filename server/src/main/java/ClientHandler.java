@@ -4,6 +4,8 @@ import dao.RouteDAO;
 import file.FileManager;
 import interaction.Response;
 import interaction.Status;
+import json.JsonConverter;
+import utils.IdGenerator;
 
 import java.io.*;
 import java.net.Socket;
@@ -11,6 +13,7 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class ClientHandler implements Runnable {
@@ -20,17 +23,18 @@ public class ClientHandler implements Runnable {
     private final FileManager manager = new FileManager();
     private final RouteDAO dao = manager.read();
 
-    private ForkJoinPool forkJoinPool = ForkJoinPool.commonPool();
-    private ExecutorService fixedThreadPool = Executors.newFixedThreadPool(3);
-    private ReentrantLock lock = new ReentrantLock();
+    private final ForkJoinPool forkJoinPool = ForkJoinPool.commonPool();
+    private final ExecutorService fixedThreadPool = Executors.newFixedThreadPool(3);
+    private final Lock locker = new ReentrantLock();
 
     public ClientHandler(Socket clientSocket) {
         this.clientSocket = clientSocket;
     }
 
     @Override
-
     public void run() {
+
+        IdGenerator.reloadId(dao);
 
         InputStream socketInputStream;
         OutputStream socketOutputStream;
@@ -46,9 +50,12 @@ public class ClientHandler implements Runnable {
             while (true) {
 
                 try {
+
                     output.printWhite("готов принимать запросы от клиента");
 
+                    locker.lock();
                     String clientMessage = this.fixedThreadPool.submit(new RequestReader(socketInputStream)).get();
+                    locker.unlock();
 
                     Response serverResponse = forkJoinPool.invoke(new RequestProcessor(clientMessage, dao));
 

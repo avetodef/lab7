@@ -1,4 +1,3 @@
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.SocketException;
@@ -35,8 +34,8 @@ public class RequestReader implements Callable<String> {
             requestJson = builder.toString();
 
             return requestJson;
-
         }
+
         catch (SocketException e) {
             System.out.println("клиент лег поспать. жди.");
             while (true){}
@@ -47,6 +46,7 @@ public class RequestReader implements Callable<String> {
         } catch (NullPointerException e) {
             System.out.println("stalo pusto v dushe i v request'e: " + e.getMessage());
         }
+
         return null;
     }
 }
