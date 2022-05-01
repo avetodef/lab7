@@ -8,46 +8,54 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Authorization {
+public static boolean isAuth = false;
 
     protected static User askIfAuth(Scanner sc) {
+
         try {
             System.out.println("впервые тут? {Y/N}");
-            String answ = " ";
+            String answ;
 
             while (true) {
                 answ = sc.nextLine();
                 switch (answ) {
 
-                    case ("Y") -> {
+                    case ("Y"): {
                         System.out.println("придумай юзернейм");
                         String username = sc.nextLine();
                         System.out.println("теперь пароль");
                         String password = sc.nextLine();
                         //TODO тут проверку вместе с БД есть ли такой юзер в БД
+                        isAuth = true;
+                        System.out.println("Для того чтобы начать введите команду. Чтобы увидеть список доступных команд введите help");
 
                         return new User(username, PasswordHandler.encode(password));
                     }
-                    case ("N") -> {
+                    case ("N") : {
                         System.out.println("введи юзернейм");
                         String newUsername = sc.nextLine();
                         System.out.println("теперь пароль");
                         String newPassword = sc.nextLine();
                         //TODO опять же проверки по типу есть ли такой юзернейм или пароль в БД
+                        isAuth = true;
+                        System.out.println("Для того чтобы начать введите команду. Чтобы увидеть список доступных команд введите help");
 
                         return new User(newUsername, PasswordHandler.encode(newPassword));
                     }
-                    case "exit"->{
+                    case "exit":{
                         List<String> input = new ArrayList<>();
                         input.add("exit");
                         ASCIIArt.ifExit(input, new ConsoleOutputer());
                     }
-                    case "admin"-> {
-                        System.out.println("проходи королева");
-                        return new User("1", PasswordHandler.encode("1"));
+                    case "admin": {
+                        isAuth = true;
+                        System.out.println("Для того чтобы начать введите команду. Чтобы увидеть список доступных команд введите help");
+                        return new User("admin", PasswordHandler.encode("dfmjosdfo8107142827sidhfsodffsd47918741"));
                     }
-
-                    default ->
-                        System.out.println("скажи пожалуйста... Y/N. Или ты хочешь уйти? Тогда пиши exit");
+                    default :{
+                        isAuth = false;
+                        System.out.println("не авторизированным пользователям доступны только команды Y/N/exit");
+                    }
 
                 }
             }

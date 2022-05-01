@@ -1,3 +1,4 @@
+import commands.VideoRzhaka;
 import console.ConsoleOutputer;
 import console.ConsoleReader;
 import console.Console;
@@ -14,9 +15,7 @@ import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.nio.charset.StandardCharsets;
-import java.security.NoSuchAlgorithmException;
 import java.util.*;
-import java.util.concurrent.Future;
 
 
 public class ClientApp implements Runnable {
@@ -26,7 +25,6 @@ public class ClientApp implements Runnable {
     Scanner sc = new Scanner(System.in);
     ByteBuffer buffer = ByteBuffer.allocate(60_000);
     Console console = new Console();
-    CommandChecker commandChecker = new CommandChecker();
     int serverPort = 6666;
     List<String> input;
     String serverResponse;
@@ -35,7 +33,6 @@ public class ClientApp implements Runnable {
     User user;
 
     protected void mainClientLoop() {
-
         try {
             Selector selector = Selector.open();
             SocketChannel socketChannel = SocketChannel.open();
@@ -43,30 +40,38 @@ public class ClientApp implements Runnable {
             socketChannel.connect(new InetSocketAddress("localhost", serverPort));
             socketChannel.register(selector, SelectionKey.OP_CONNECT);
 
-
-            user = Authorization.askIfAuth(sc);
-            go(selector, socketChannel, user);
-
-        } catch (
-                UnknownHostException e) {
-            System.err.println("неизвестный хост. порешай там в коде что нибудь ок?");
-            System.exit(1);
-        } catch (
-                IOException exception) {
-            System.err.println("Сервер пока недоступен. Закончить работу клиента? (напишите {yes} или {no})?");
-            String answer = " ";
-            try {
-
-                serverUpal(answer);
-
-            } catch (NoSuchElementException e) {
-                throw new ExitException("poka");
+            if (!Authorization.isAuth) {
+                user = Authorization.askIfAuth(sc);
+            } else {
+                go(selector, socketChannel, user);
             }
 
         }
-//        catch (NoSuchAlgorithmException e) {
-//            System.out.println(e.getMessage());
-//        }
+        catch (UnknownHostException e) {
+            System.err.println("неизвестный хост. порешай там в коде что нибудь ок?");
+            System.exit(1);
+
+        } catch (IOException exception) {
+            System.err.println("Сервер пока недоступен. Закончить работу клиента? (напишите {yes} или {no})?");
+
+            String answer;
+            try {
+                while (!(answer = sc.nextLine()).equals("no")) {
+                    switch (answer) {
+                        case "":
+                            break;
+                        case "yes":
+                            System.exit(0);
+                            break;
+                        default:
+                            System.out.println("скажи пожалуйста.... yes или no");
+                    }
+                }
+                System.out.println("жди...");
+            }catch (NoSuchElementException e){
+                throw new ExitException("poka");
+            }
+        }
     }
 
     private void go(Selector selector, SocketChannel socketChannel, User user) throws IOException {
@@ -92,13 +97,16 @@ public class ClientApp implements Runnable {
 
                     try {
                         input = consoleReader.reader();
+
                         request = new Request(input, null, user);
+
                         ASCIIArt.ifExit(input, output);
 
+                        if (input.contains("mega_rzhaka"))
+                            new Thread(new VideoRzhaka()).start();
+
                         if (input.contains("execute_script")) {
-                            if (commandChecker.ifExecuteScript(input)) {
-                                readerSender.readAndSend(input, request, socketChannel, console);
-                            } else break;
+                            readerSender.readAndSend(CommandChecker.ifExecuteScript(input), request, socketChannel, console);
                         } else {
                             readerSender.readAndSend(input, request, socketChannel, console);
                         }
@@ -115,10 +123,7 @@ public class ClientApp implements Runnable {
                     } catch (IndexOutOfBoundsException e) {
                         output.printRed("брат забыл айди ввести походу");
                         continue;
-                    } catch (IOException e) {
-                        System.out.println("writable problems: " + e.getMessage());
                     }
-
                     client.register(selector, SelectionKey.OP_READ);
                     continue;
                 }
@@ -128,7 +133,6 @@ public class ClientApp implements Runnable {
                     read(socketChannel);
 
                     client.register(selector, SelectionKey.OP_WRITE);
-
                 }
 
             }
@@ -158,13 +162,9 @@ public class ClientApp implements Runnable {
 
             Response response = JsonConverter.desResponse(serverResponse);
             printPrettyResponse(response);
-
-
             buffer.clear();
 
         } catch (IOException e) {
-            System.out.println("readable problems: " + e.getMessage());
-
         }
     }
 
@@ -179,7 +179,6 @@ public class ClientApp implements Runnable {
                 break;
             } catch (RuntimeException e) {
                 System.err.println("ошибка.....: " + e.getMessage());
-
             }
         }
 
@@ -188,15 +187,34 @@ public class ClientApp implements Runnable {
 
     private void printPrettyResponse(Response r) {
         switch (r.status) {
-            case OK -> output.printNormal(r.msg);
-            case FILE_ERROR -> output.printBlue(r.msg);
-            case UNKNOWN_ERROR, SERVER_ERROR -> output.printRed(r.msg);
-            case COLLECTION_ERROR -> output.printYellow(r.msg);
-            case USER_EBLAN_ERROR -> output.printPurple(r.msg);
+            case OK: {
+                output.printNormal(r.msg);
+                break;
+            }
+            case FILE_ERROR: {
+                output.printBlue(r.msg);
+                break;
+            }
+            case UNKNOWN_ERROR: {
+                output.printRed(r.msg);
+                break;
+            }
+            case COLLECTION_ERROR: {
+                output.printYellow(r.msg);
+                break;
+            }
+            case USER_EBLAN_ERROR: {
+                output.printPurple(r.msg);
+                break;
+            }
+            case SERVER_ERROR: {
+                output.printRed(r.msg);
+            }
         }
     }
 
-    private void serverUpal(String answer) {
+    private void serverUpal() {
+        String answer;
         while (!(answer = sc.nextLine()).equals("no")) {
             switch (answer) {
                 case "":

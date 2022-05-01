@@ -26,8 +26,10 @@ public class JsonConverter {
 
         try {
             output = new ObjectMapper().readValue(s, Request.class);
+
         } catch (JsonProcessingException e) {
             System.out.println("краказябра хи хи ха ха чин чань чунь (десер реквеста)" + e.getMessage());
+
 
         }
         return output;
@@ -50,7 +52,7 @@ public class JsonConverter {
         Response output = null;
 
         try {
-            //TODO тут падает и выкидывает бесконечно исключений
+
             output = new ObjectMapper().readValue(s, Response.class);
         } catch (JsonProcessingException e) {
             System.out.println("краказябра хи хи ха ха чин чань чунь (десер response) " + e.getMessage());

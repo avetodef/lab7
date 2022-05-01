@@ -1,6 +1,5 @@
 package interaction;
 
-
 import utils.RouteInfo;
 
 import java.io.Serializable;
