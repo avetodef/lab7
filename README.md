@@ -1,3 +1,4 @@
 # lab7
 третья причина для коллективного суицида
-![image](https://user-images.githubusercontent.com/93034945/166163172-12d588e1-b66d-441b-9c7a-de8e9fbe75c1.png)
+
+![waiting-for-java-server](https://user-images.githubusercontent.com/93034945/166163202-24132dfb-2944-467d-b61c-a29c5bfbdc39.gif)
