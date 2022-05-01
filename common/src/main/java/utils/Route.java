@@ -3,6 +3,7 @@ package utils;
 
 
 
+import java.sql.Time;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -17,6 +18,9 @@ public class Route {
     private Location from; //Поле не может быть null
     private utils.loc.Location to; //Поле может быть null
     private Integer distance; //Поле не может быть null, Значение поля должно быть больше 1
+
+    public Route(int id, String name, double x, Double y, Time creationdate, double from_x, Long from_y, String name_from, int to_x, float to_y, String name_to, Integer distance) {
+    }
 
 //    public static void builder() {
 //    }
