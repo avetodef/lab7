@@ -20,40 +20,35 @@ import java.util.*;
 
 public class ClientApp implements Runnable {
 
-    ConsoleReader consoleReader = new ConsoleReader();
-    ConsoleOutputer output = new ConsoleOutputer();
-    Scanner sc = new Scanner(System.in);
-    ByteBuffer buffer = ByteBuffer.allocate(60_000);
-    Console console = new Console();
-    int serverPort = 6666;
-    List<String> input;
-    String serverResponse;
-    Request request;
-    ReaderSender readerSender = new ReaderSender();
-    User user;
+    private final ConsoleReader consoleReader = new ConsoleReader();
+    private final ConsoleOutputer o = new ConsoleOutputer();
+    private final Scanner sc = new Scanner(System.in);
+    private final ByteBuffer buffer = ByteBuffer.allocate(60_000);
+    private final Console console = new Console();
+    private final ReaderSender readerSender = new ReaderSender();
+    private User user;
+    private final Authorization auth = new Authorization();
 
     protected void mainClientLoop() {
         try {
             Selector selector = Selector.open();
             SocketChannel socketChannel = SocketChannel.open();
             socketChannel.configureBlocking(false);
+            int serverPort = 6666;
             socketChannel.connect(new InetSocketAddress("localhost", serverPort));
             socketChannel.register(selector, SelectionKey.OP_CONNECT);
 
             if (!Authorization.isAuth) {
-                user = Authorization.askIfAuth(sc);
+                user = auth.askIfAuth(sc);
             } else {
                 go(selector, socketChannel, user);
             }
 
-        }
-        catch (UnknownHostException e) {
-            System.err.println("неизвестный хост. порешай там в коде что нибудь ок?");
-            System.exit(1);
+        } catch (UnknownHostException e) {
+            o.printRed("неизвестный хост. порешай там в коде что нибудь ок?");
 
         } catch (IOException exception) {
-            System.err.println("Сервер пока недоступен. Закончить работу клиента? (напишите {yes} или {no})?");
-
+            o.printRed("Сервер пока недоступен. Закончить работу клиента? (напишите {yes} или {no})?");
             String answer;
             try {
                 while (!(answer = sc.nextLine()).equals("no")) {
@@ -64,11 +59,11 @@ public class ClientApp implements Runnable {
                             System.exit(0);
                             break;
                         default:
-                            System.out.println("скажи пожалуйста.... yes или no");
+                            o.printNormal("скажи пожалуйста.... yes или no");
                     }
                 }
-                System.out.println("жди...");
-            }catch (NoSuchElementException e){
+                o.printNormal("жди...");
+            } catch (NoSuchElementException e) {
                 throw new ExitException("poka");
             }
         }
@@ -92,15 +87,13 @@ public class ClientApp implements Runnable {
                     client.register(selector, SelectionKey.OP_WRITE);
                     continue;
                 }
-
                 if (key.isWritable()) {
-
                     try {
-                        input = consoleReader.reader();
+                        List<String> input = consoleReader.reader();
 
-                        request = new Request(input, null, user);
+                        Request request = new Request(input, null, user);
 
-                        ASCIIArt.ifExit(input, output);
+                        ASCIIArt.ifExit(input, o);
 
                         if (input.contains("mega_rzhaka"))
                             new Thread(new VideoRzhaka()).start();
@@ -112,16 +105,16 @@ public class ClientApp implements Runnable {
                         }
 
                     } catch (NumberFormatException e) {
-                        System.out.println("int введи");
+                        o.printRed("int введи");
                         continue;
                     } catch (NullPointerException e) {
-                        output.printRed("Введённой вами команды не существует. Попробуйте ввести другую команду.");
+                        o.printRed("Введённой вами команды не существует. Попробуйте ввести другую команду.");
                         continue;
                     } catch (EmptyInputException e) {
-                        output.printRed(e.getMessage());
+                        o.printRed(e.getMessage());
                         continue;
                     } catch (IndexOutOfBoundsException e) {
-                        output.printRed("брат забыл айди ввести походу");
+                        o.printRed("брат забыл айди ввести походу");
                         continue;
                     }
                     client.register(selector, SelectionKey.OP_READ);
@@ -144,9 +137,9 @@ public class ClientApp implements Runnable {
         if (client.isConnectionPending()) {
             try {
                 client.finishConnect();
-                output.printWhite("готов к работе с сервером");
+                o.printWhite("готов к работе с сервером");
             } catch (IOException e) {
-                System.out.println(e.getMessage());
+                System.out.println("connection refused");
             }
         }
     }
@@ -158,13 +151,14 @@ public class ClientApp implements Runnable {
             socketChannel.read(buffer);
             buffer.flip();
 
-            serverResponse = StandardCharsets.UTF_8.decode(buffer).toString().substring(2);
+            String serverResponse = StandardCharsets.UTF_8.decode(buffer).toString().substring(2);
 
             Response response = JsonConverter.desResponse(serverResponse);
             printPrettyResponse(response);
             buffer.clear();
 
         } catch (IOException e) {
+            System.out.println("IO ");
         }
     }
 
@@ -175,58 +169,41 @@ public class ClientApp implements Runnable {
             try {
                 mainClientLoop();
             } catch (ExitException e) {
-                System.err.println(e.getMessage());
+                o.printRed("heheheha");
                 break;
             } catch (RuntimeException e) {
-                System.err.println("ошибка.....: " + e.getMessage());
+                o.printRed("ошибка.....: " + e.getMessage());
             }
         }
 
     }
-
 
     private void printPrettyResponse(Response r) {
         switch (r.status) {
             case OK: {
-                output.printNormal(r.msg);
+                o.printNormal(r.msg);
                 break;
             }
             case FILE_ERROR: {
-                output.printBlue(r.msg);
+                o.printBlue(r.msg);
                 break;
             }
             case UNKNOWN_ERROR: {
-                output.printRed(r.msg);
+                o.printRed(r.msg);
                 break;
             }
             case COLLECTION_ERROR: {
-                output.printYellow(r.msg);
+                o.printYellow(r.msg);
                 break;
             }
             case USER_EBLAN_ERROR: {
-                output.printPurple(r.msg);
+                o.printPurple(r.msg);
                 break;
             }
             case SERVER_ERROR: {
-                output.printRed(r.msg);
+                o.printRed(r.msg);
             }
         }
-    }
-
-    private void serverUpal() {
-        String answer;
-        while (!(answer = sc.nextLine()).equals("no")) {
-            switch (answer) {
-                case "":
-                    break;
-                case "yes":
-                    System.exit(0);
-                    break;
-                default:
-                    System.out.println("скажи пожалуйста.... yes или no");
-            }
-        }
-        System.out.println("жди...");
     }
 
     /**
@@ -243,7 +220,6 @@ public class ClientApp implements Runnable {
 
     @Override
     public void run() {
-
         runClient();
     }
 }

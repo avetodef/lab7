@@ -1,3 +1,4 @@
+import console.ConsoleOutputer;
 import org.bouncycastle.util.encoders.Hex;
 
 import java.nio.charset.StandardCharsets;
@@ -8,14 +9,14 @@ import java.security.NoSuchAlgorithmException;
  * класс, который кодирует/декодирует пароли
  */
 public class PasswordHandler {
-
+private final static ConsoleOutputer o = new ConsoleOutputer();
     public static String encode(String s){
 
         MessageDigest digest = null;
         try {
             digest = MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException e) {
-            System.out.println("encoding troubles " + e.getMessage());
+            o.printRed("encoding troubles " + e.getMessage());
         }
         assert digest != null;
         byte[] hash = digest.digest(
@@ -30,7 +31,7 @@ public class PasswordHandler {
         try {
             digest1 = MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException e) {
-            System.out.println("decoding troubles " + e.getMessage());
+            o.printRed("decoding troubles " + e.getMessage());
         }
         assert digest1 != null;
         byte[] hash = digest1.digest(
