@@ -15,7 +15,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class ReaderSender {
-
     protected void readAndSend(List<String> input, Request request, SocketChannel socketChannel, Console console) throws
             IOException {
         boolean flag = true;
@@ -31,7 +30,7 @@ public class ReaderSender {
             }
             if (flag) {
                 if (command.isAsker()) {
-                    RouteInfo info = console.info(); //TODO рут инфо создался с кайфом. тут все ок
+                    RouteInfo info = console.info();
                     request.setInfo(info);
                 }
 

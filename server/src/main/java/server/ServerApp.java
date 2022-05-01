@@ -1,15 +1,14 @@
+package server;
+
 import console.ConsoleOutputer;
-import dao.RouteDAO;
-import file.FileManager;
 import interaction.Response;
 import interaction.Status;
-import utils.IdGenerator;
+import server.ClientHandler;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.util.NoSuchElementException;
-import java.util.Scanner;
 
 
 public class ServerApp {
@@ -17,7 +16,6 @@ public class ServerApp {
     ConsoleOutputer output = new ConsoleOutputer();
 
     protected void mainServerLoop() throws IOException {
-
 
         Response errorResponse = new Response();
         errorResponse.setStatus(Status.SERVER_ERROR);

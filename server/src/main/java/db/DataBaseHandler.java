@@ -1,3 +1,5 @@
+package db;
+
 import java.io.OutputStream;
 import java.sql.*;
 import java.util.logging.LogManager;
@@ -65,14 +67,14 @@ public class DataBaseHandler {
         try {
             connection = DriverManager.getConnection(login, URL, password);
             System.out.println("Соединение прервано.");
-            //ServerApp.Logger.info("Соединение с базой данных установлено.");
+            //server.ServerApp.Logger.info("Соединение с базой данных установлено.");
 
         } catch (SQLException e) {
-            //ServerApp.logger.error("Произошла ошибка при подключении к базе данных.");
+            //server.ServerApp.logger.error("Произошла ошибка при подключении к базе данных.");
             System.err.println("Произошла ошибка при подключении к базе данных.");
         /*} catch(ClassNotFoundException exception){
             System.out.println("Драйвер управления базой данных не найден.");
-            //ServerApp.logger.error("Драйвер управления базой данных не найден.");
+            //server.ServerApp.logger.error("Драйвер управления базой данных не найден.");
         }*/
         }
     }
@@ -120,11 +122,11 @@ public class DataBaseHandler {
         try{
             connection.close();
             System.out.println("Соединение с базой данных разорвано");
-            //ServerApp.logger.info("Соединение с базой данных разорвано")
+            //server.ServerApp.logger.info("Соединение с базой данных разорвано")
 
         }catch (SQLException sqlException){
             System.err.println("Произошла ошибка при разрыве соединения с базой данных");
-            //ServerApp.logger.error("Произошла ошибка при разрыве соединения с базой данных")
+            //server.ServerApp.logger.error("Произошла ошибка при разрыве соединения с базой данных")
         }
     }
     //Устанавливаем режим транзакции базы данных

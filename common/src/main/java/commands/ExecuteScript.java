@@ -42,7 +42,7 @@ public class ExecuteScript extends ACommands {
                 ) {
                     ACommands commands;
                     String command = lineOfFile.trim();
-                    System.out.println("command");
+
                     if (command.isEmpty()) {
                         throw new EmptyInputException();
                     }
@@ -51,7 +51,7 @@ public class ExecuteScript extends ACommands {
                     try {
                         commands = CommandSaver.getCommand(args);
                         commands.execute(dao);
-                        System.out.println(commands.execute(dao).toString());
+
                         response = commands.response;
                     } catch (RuntimeException e) {
                         response.msg("ты норм? в скрипте параша написана, переделывай").

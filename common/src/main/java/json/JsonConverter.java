@@ -25,9 +25,6 @@ public class JsonConverter {
         Request output = null;
 
         try {
-            //TODO тут жестоко падает причем первя команда нормально работает
-            //TODO я ВООБЩЕ не понимаю как это работает. нечетные команды он читает, четные не читает.
-
             output = new ObjectMapper().readValue(s, Request.class);
 
         } catch (JsonProcessingException e) {

@@ -1,13 +1,11 @@
+package server;
+
 import commands.ACommands;
 import commands.CommandSaver;
-import commands.VideoRzhaka;
 import dao.RouteDAO;
-import interaction.Request;
 import interaction.Response;
 import json.JsonConverter;
 import utils.RouteInfo;
-
-import java.util.concurrent.Future;
 import java.util.concurrent.RecursiveTask;
 
 public class RequestProcessor extends RecursiveTask<Response>{
@@ -27,12 +25,12 @@ public class RequestProcessor extends RecursiveTask<Response>{
      */
     @Override
     protected Response compute() {
+
         ACommands command = CommandSaver.getCommand(JsonConverter.des(msg).getArgs());
         RouteInfo info = JsonConverter.des(msg).getInfo();
         command.setInfo(info);
 
         return command.execute(dao);
-        //TODO мне кажется что не передается инфо вместе с аргументами.
     }
 
 

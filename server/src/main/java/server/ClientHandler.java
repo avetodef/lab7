@@ -1,10 +1,11 @@
+package server;
+
 import commands.Save;
 import console.ConsoleOutputer;
 import dao.RouteDAO;
 import file.FileManager;
 import interaction.Response;
 import interaction.Status;
-import json.JsonConverter;
 import utils.IdGenerator;
 
 import java.io.*;
@@ -57,9 +58,13 @@ public class ClientHandler implements Runnable {
                     String clientMessage = this.fixedThreadPool.submit(new RequestReader(socketInputStream)).get();
                     locker.unlock();
 
-                    Response serverResponse = forkJoinPool.invoke(new RequestProcessor(clientMessage, dao));
+                    locker.lock();
+                    Response serverResponse = this.forkJoinPool.invoke(new RequestProcessor(clientMessage, dao));
+                    locker.unlock();
 
+                    locker.lock();
                     this.fixedThreadPool.execute(new ResponseSender(clientSocket, socketOutputStream, dataOutputStream, serverResponse));
+                    locker.unlock();
 
                     Save.execute(dao);
 

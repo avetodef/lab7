@@ -1,4 +1,4 @@
-import javafx.fxml.JavaFXBuilderFactory;
+package server;
 
 import java.io.IOException;
 
