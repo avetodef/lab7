@@ -30,7 +30,7 @@ public class ReaderSender {
             }
             if (flag) {
                 if (command.isAsker()) {
-                    RouteInfo info = console.info(); //TODO рут инфо создался с кайфом. тут все ок
+                    RouteInfo info = console.info();
                     request.setInfo(info);
                 }
 

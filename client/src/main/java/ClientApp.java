@@ -43,23 +43,32 @@ public class ClientApp implements Runnable {
             if (!Authorization.isAuth) {
                 user = Authorization.askIfAuth(sc);
             } else {
-                System.out.println("Для того чтобы начать введите команду. Чтобы увидеть список доступных команд введите help");
                 go(selector, socketChannel, user);
             }
 
-        } catch (
-                UnknownHostException e) {
+        }
+        catch (UnknownHostException e) {
             System.err.println("неизвестный хост. порешай там в коде что нибудь ок?");
             System.exit(1);
-        } catch (
-                IOException exception) {
+
+        } catch (IOException exception) {
             System.err.println("Сервер пока недоступен. Закончить работу клиента? (напишите {yes} или {no})?");
-            String answer = " ";
+
+            String answer;
             try {
-
-                serverUpal();
-
-            } catch (NoSuchElementException e) {
+                while (!(answer = sc.nextLine()).equals("no")) {
+                    switch (answer) {
+                        case "":
+                            break;
+                        case "yes":
+                            System.exit(0);
+                            break;
+                        default:
+                            System.out.println("скажи пожалуйста.... yes или no");
+                    }
+                }
+                System.out.println("жди...");
+            }catch (NoSuchElementException e){
                 throw new ExitException("poka");
             }
         }
@@ -114,19 +123,7 @@ public class ClientApp implements Runnable {
                     } catch (IndexOutOfBoundsException e) {
                         output.printRed("брат забыл айди ввести походу");
                         continue;
-                    } catch (IOException e) {
-                        System.out.println("сервер упал. жди.");
-//                        System.err.println("Сервер пока недоступен. Закончить работу клиента? (напишите {yes} или {no})?");
-//                        String answer = " ";
-//                        try {
-//
-//                            serverUpal();
-//
-//                        } catch (NoSuchElementException e1) {
-//                            throw new ExitException("poka");
-//                        }
                     }
-
                     client.register(selector, SelectionKey.OP_READ);
                     continue;
                 }

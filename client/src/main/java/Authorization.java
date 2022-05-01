@@ -27,6 +27,7 @@ public static boolean isAuth = false;
                         String password = sc.nextLine();
                         //TODO тут проверку вместе с БД есть ли такой юзер в БД
                         isAuth = true;
+                        System.out.println("Для того чтобы начать введите команду. Чтобы увидеть список доступных команд введите help");
 
                         return new User(username, PasswordHandler.encode(password));
                     }
@@ -37,6 +38,7 @@ public static boolean isAuth = false;
                         String newPassword = sc.nextLine();
                         //TODO опять же проверки по типу есть ли такой юзернейм или пароль в БД
                         isAuth = true;
+                        System.out.println("Для того чтобы начать введите команду. Чтобы увидеть список доступных команд введите help");
 
                         return new User(newUsername, PasswordHandler.encode(newPassword));
                     }
@@ -47,9 +49,9 @@ public static boolean isAuth = false;
                     }
                     case "admin": {
                         isAuth = true;
+                        System.out.println("Для того чтобы начать введите команду. Чтобы увидеть список доступных команд введите help");
                         return new User("admin", PasswordHandler.encode("dfmjosdfo8107142827sidhfsodffsd47918741"));
                     }
-
                     default :{
                         isAuth = false;
                         System.out.println("не авторизированным пользователям доступны только команды Y/N/exit");
