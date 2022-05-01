@@ -26,8 +26,8 @@ public class Route {
 //    }
 
     public String getDescription() {
-            return id + "," + name +","+ coordinates.getCoorX() + "," + coordinates.getCoorY() + "," + creationDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy : HH.mm.ss")) + "," + from.getFromX() + "," + from.getFromY() + ","
-                    + from.getName() + "," + to.getToX() + "," + to.getToY() + "," + to.getName() + "," + distance;
+        return id + "," + name +","+ coordinates.getCoorX() + "," + coordinates.getCoorY() + "," + creationDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy : HH.mm.ss")) + "," + from.getFromX() + "," + from.getFromY() + ","
+                + from.getName() + "," + to.getToX() + "," + to.getToY() + "," + to.getName() + "," + distance;
     }
 
     public Route(String name, double coordinatesX, Double coordinatesY, double fromX, Long fromY, String nameFrom, int toX, float toY, String nameTo, Integer distance ){
@@ -96,4 +96,3 @@ public class Route {
         return to;
     }
 }
-

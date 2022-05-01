@@ -1,5 +1,7 @@
 package db;
 
+import org.apache.commons.dbcp.BasicDataSource;
+
 import java.io.OutputStream;
 import java.sql.*;
 import java.util.logging.LogManager;
@@ -8,6 +10,7 @@ import java.util.logging.LogManager;
 /**
  * Класс обработки базы данных
  */
+
 public class DataBaseHandler {
 
     //TODO класс с методами работы с бд(удалили,вылетела и тд)
@@ -26,6 +29,7 @@ public class DataBaseHandler {
     public static final String ROUTE_TABLE_USER_ID_COLUMN = "user_id";
     //составляющие таблицы USER_TABLE
     public static final String USER_TABLE_ID_COLUMN = "id";
+    public static final String USER_TABLE_URL_COLUMN = "url";
     public static final String USER_TABLE_LOGIN_COLUMN = "login";
     public static final String USER_TABLE_PASSWORD_COLUMN = "password";
     //составляющие таблицы COORDINATES_TABLE
@@ -43,19 +47,26 @@ public class DataBaseHandler {
     public static final String LOCATION_TO_TABLE_Y_COLUMN = "to_y";
     public static final String LOCATION_TO_TABLE_NAME_COLUMN = "name_to";
 
+    /*static BasicDataSource basepool = new BasicDataSource();
+    static {
+        basepool.setURL("jdbc:postgresql://localhost:5432/postgres");
+        basepool.setLogin("postgres");
+        basepool.setPassword(getPassDEBUG());
+    }*/
     private final String JDBC_DRIVER = "org.postgresql.Driver";
+
     private String login = "postgres";
     private String URL = "jdbc:postgresql://localhost:5432/postgres";
     private String password = "lterm54201";
     private Connection connection;
     //TODO прописать соединение с базой данных
 
-    public DataBaseHandler(String URL, String password,String login) {
+    /*public DataBaseHandler(String URL, String password,String login) {
         this.URL = URL;
         this.password = password;
         this.login = login;
         connectToDataBase();
-    }
+    }*/
 
     //TODO подключить библиотеку логера,прописать метод forName(сейчас он в классе, так не надо)
     //public static Logger logger = LogManager.getLogger("ServerLogger");
@@ -67,14 +78,14 @@ public class DataBaseHandler {
         try {
             connection = DriverManager.getConnection(login, URL, password);
             System.out.println("Соединение прервано.");
-            //server.ServerApp.Logger.info("Соединение с базой данных установлено.");
+            //ServerApp.Logger.info("Соединение с базой данных установлено.");
 
         } catch (SQLException e) {
-            //server.ServerApp.logger.error("Произошла ошибка при подключении к базе данных.");
+            //ServerApp.logger.error("Произошла ошибка при подключении к базе данных.");
             System.err.println("Произошла ошибка при подключении к базе данных.");
         /*} catch(ClassNotFoundException exception){
             System.out.println("Драйвер управления базой данных не найден.");
-            //server.ServerApp.logger.error("Драйвер управления базой данных не найден.");
+            //ServerApp.logger.error("Драйвер управления базой данных не найден.");
         }*/
         }
     }
@@ -122,11 +133,11 @@ public class DataBaseHandler {
         try{
             connection.close();
             System.out.println("Соединение с базой данных разорвано");
-            //server.ServerApp.logger.info("Соединение с базой данных разорвано")
+            //ServerApp.logger.info("Соединение с базой данных разорвано")
 
         }catch (SQLException sqlException){
             System.err.println("Произошла ошибка при разрыве соединения с базой данных");
-            //server.ServerApp.logger.error("Произошла ошибка при разрыве соединения с базой данных")
+            //ServerApp.logger.error("Произошла ошибка при разрыве соединения с базой данных")
         }
     }
     //Устанавливаем режим транзакции базы данных
