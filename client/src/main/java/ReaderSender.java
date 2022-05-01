@@ -1,6 +1,7 @@
 import commands.ACommands;
 import commands.CommandSaver;
 import console.Console;
+import console.ConsoleOutputer;
 import exceptions.EmptyInputException;
 import interaction.Request;
 import interaction.Response;
@@ -15,6 +16,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class ReaderSender {
+    private final ConsoleOutputer o = new ConsoleOutputer();
     protected void readAndSend(List<String> input, Request request, SocketChannel socketChannel, Console console) throws
             IOException {
         boolean flag = true;
@@ -24,7 +26,7 @@ public class ReaderSender {
             ACommands command = CommandSaver.getCommand(input);
             if (command.isIdAsker()) {
                 if (input.size() != 2 || Integer.parseInt(input.get(1)) < 0 || input.get(1).contains(".") || input.get(1).contains(",")) {
-                    System.err.println("введи нормальный айди");
+                    o.printRed("введи нормальный айди");
                     flag = false;
                 }
             }
@@ -35,8 +37,8 @@ public class ReaderSender {
                 }
 
                 socketChannel.write(StandardCharsets.UTF_8.encode(JsonConverter.ser(request)));
-                System.out.println("sending to the server...");
-            } else System.out.println("ну значит не отправлю на сервер твою команду. заново вводи");
+                o.printWhite("sending to the server...");
+            } else o.printRed("ну значит не отправлю на сервер твою команду. заново вводи");
 
         } else
             throw new NullPointerException("Введённой вами команды не существует. Попробуйте ввести другую команду.");
