@@ -15,7 +15,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class ReaderSender {
-
     protected void readAndSend(List<String> input, Request request, SocketChannel socketChannel, Console console) throws
             IOException {
         boolean flag = true;

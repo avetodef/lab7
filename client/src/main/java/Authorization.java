@@ -52,7 +52,7 @@ public static boolean isAuth = false;
 
                     default :{
                         isAuth = false;
-                        System.out.println("скажи пожалуйста... Y/N. Или ты хочешь уйти? Тогда пиши exit");
+                        System.out.println("не авторизированным пользователям доступны только команды Y/N/exit");
                     }
 
                 }

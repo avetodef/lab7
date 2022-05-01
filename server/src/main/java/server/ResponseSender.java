@@ -1,3 +1,5 @@
+package server;
+
 import interaction.Response;
 import interaction.Status;
 import json.JsonConverter;

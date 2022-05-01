@@ -39,9 +39,5 @@ public class Response  implements Serializable  {
         this.status = status;
     }
     public Response(){}
-    /**
-     * The main computation performed by this task.
-     *
-     * @return the result of the computation
-     */
+
 }

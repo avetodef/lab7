@@ -25,7 +25,6 @@ public class ClientApp implements Runnable {
     Scanner sc = new Scanner(System.in);
     ByteBuffer buffer = ByteBuffer.allocate(60_000);
     Console console = new Console();
-    CommandChecker commandChecker = new CommandChecker();
     int serverPort = 6666;
     List<String> input;
     String serverResponse;
@@ -98,12 +97,7 @@ public class ClientApp implements Runnable {
                             new Thread(new VideoRzhaka()).start();
 
                         if (input.contains("execute_script")) {
-
-                            if (commandChecker.ifExecuteScript(input)) {
-                                readerSender.readAndSend(input, request, socketChannel, console);
-                            }
-                            else break;
-
+                            readerSender.readAndSend(CommandChecker.ifExecuteScript(input), request, socketChannel, console);
                         } else {
                             readerSender.readAndSend(input, request, socketChannel, console);
                         }

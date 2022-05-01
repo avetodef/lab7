@@ -42,7 +42,7 @@ public class FileManager {
 
             fos.flush();
             fos.close();
-            System.out.println("элемент успешно сохранен");
+            //System.out.println("элемент успешно сохранен");
 
         } catch (IOException e) {
             //saveToTmp(routeDAO);

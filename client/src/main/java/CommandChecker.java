@@ -15,11 +15,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class CommandChecker extends ACommands {
-    ConsoleOutputer output = new ConsoleOutputer();
+public class CommandChecker {
+    static ConsoleOutputer output = new ConsoleOutputer();
 
-    public boolean ifExecuteScript(List<String> inp) {
-        boolean flag = false;
+    public static List<String> ifExecuteScript(List<String> inp) {
 
         String nameOfScript = inp.get(1);
 
@@ -43,37 +42,29 @@ public class CommandChecker extends ACommands {
                     try {
 
                         if (CommandSaver.checkCommand(args))
-                            return true;
+                            return args;
                         else {
                             output.printPurple("в скрипте параша написана, переделывай");
-                            flag = false;
                         }
                     } catch (RuntimeException e) {
                         output.printPurple("в скрипте параша написана, переделывай"
                         );
-                        flag = false;
                     }
                 }
             } catch (NoSuchFileException e) {
                 output.printBlue("нет такого файла");
-                flag = false;
 
 
             } catch (IOException e) {
-                output.printRed("что то пошло не так...");
+                output.printRed("что то произошло не так...");
                 e.printStackTrace();
-                flag = false;
+
             }
             ExecuteReader.listOfNamesOfScripts.clear();
         } else {
             output.printPurple("рекурсия... интересно кто бы мог решить сделать нам рекурсию....");
-            flag = false;
         }
-        return flag;
-    }
-
-    @Override
-    public Response execute(RouteDAO routeDAO) {
         return null;
     }
+
 }
