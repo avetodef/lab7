@@ -3,6 +3,9 @@ package server;
 import commands.Save;
 import console.ConsoleOutputer;
 import dao.RouteDAO;
+import db.DataBaseDAO;
+import db.DataBaseHandler;
+import db.DataBaseUsersDolboeb;
 import file.FileManager;
 import interaction.Request;
 import interaction.Response;
@@ -24,6 +27,10 @@ public class ClientHandler implements Runnable {
 
     private final Socket clientSocket;
     private final ConsoleOutputer output = new ConsoleOutputer();
+    public DataBaseHandler dbHandler = new DataBaseHandler();
+    public DataBaseUsersDolboeb dbUserDolboeb = new DataBaseUsersDolboeb();
+    public DataBaseDAO dbdao = new DataBaseDAO(dbHandler, dbUserDolboeb);
+    //TODO переписать на скл
     FileManager manager = new FileManager();
     private final RouteDAO dao = manager.read();
 
@@ -33,7 +40,7 @@ public class ClientHandler implements Runnable {
 
     public Request request;
     public User user;
-
+    private Save save;
 
     public ClientHandler(Socket clientSocket) {
         this.clientSocket = clientSocket;
@@ -77,7 +84,7 @@ public class ClientHandler implements Runnable {
                     this.fixedThreadPool.execute(new ResponseSender(clientSocket, socketOutputStream, dataOutputStream, serverResponse));
                     locker.unlock();
 
-                    Save.execute(dao);
+                    save.execute(dao);
 
                 } catch (NullPointerException e) {
                     errorResponse.setMsg("Введённой вами команды не существует. Попробуйте ввести другую команду.");

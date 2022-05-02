@@ -2,6 +2,7 @@ package commands;
 
 
 import dao.RouteDAO;
+import db.DataBaseDAO;
 import interaction.Response;
 import interaction.Status;
 import utils.Route;
@@ -14,15 +15,15 @@ import java.util.Comparator;
 public class PrintDescendingDistance extends ACommands {
 
 
-    public Response execute(RouteDAO routeDAO) {
+    public Response execute(DataBaseDAO dao) {
 
         StringBuilder builder = new StringBuilder();
-        routeDAO.getAll().stream()
+        dao.getAll().stream()
                 .sorted(Comparator.comparingInt(Route::getDistance))
                 .forEach(r->builder.append(r.getDistance()).append(" "));
 
 
-        if (routeDAO.getAll().size() == 0)
+        if (dao.getAll().size() == 0)
 
             response.msg("пусто").status(Status.COLLECTION_ERROR);
 

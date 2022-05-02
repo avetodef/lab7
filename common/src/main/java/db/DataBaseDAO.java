@@ -1,5 +1,7 @@
 package db;
+
 import dao.DAO;
+import dao.RouteDAO;
 import exceptions.DataBaseException;
 import interaction.User;
 import utils.Route;
@@ -114,13 +116,14 @@ public class DataBaseDAO implements DAO {
     private DataBaseUsersDolboeb dataBaseUsersDolboeb;
 
 
-    public DataBaseDAO(DataBaseHandler dataBaseHandler,DataBaseUsersDolboeb dataBaseUsersDolboeb){
-    this.dataBaseHandler = dataBaseHandler;
-    this.dataBaseUsersDolboeb = dataBaseUsersDolboeb;
-}
+    public DataBaseDAO(DataBaseHandler dataBaseHandler, DataBaseUsersDolboeb dataBaseUsersDolboeb) {
+        this.dataBaseHandler = dataBaseHandler;
+        this.dataBaseUsersDolboeb = dataBaseUsersDolboeb;
+    }
 
     /**
      * Класс, отвечающий за создание коллекции с элементами определенного типа
+     *
      * @param resultSet
      * @return
      * @throws SQLException
@@ -177,21 +180,22 @@ public class DataBaseDAO implements DAO {
 
     /**
      * Класс, отвечающий за получение данных о коллекции
+     *
      * @return
      * @throws DataBaseException
      */
-    public NavigableSet<Route> getCollection() throws DataBaseException{
+    public NavigableSet<Route> getCollection() throws DataBaseException {
         NavigableSet<Route> routes = new TreeSet<>();
         PreparedStatement preparedSelectAllStatement = null;
         try {
-            preparedSelectAllStatement = dataBaseHandler.getPreparedStatement(SELECT_ALL_ROUTE,false);
+            preparedSelectAllStatement = dataBaseHandler.getPreparedStatement(SELECT_ALL_ROUTE, false);
             ResultSet resultSet = preparedSelectAllStatement.executeQuery();
-            while (resultSet.next()){
+            while (resultSet.next()) {
                 routes.add(createRoute(resultSet));
             }
         } catch (SQLException e) {
             throw new DataBaseException();
-        } finally{
+        } finally {
             dataBaseHandler.closePreparedStatement(preparedSelectAllStatement);
         }
         return routes;
@@ -218,35 +222,37 @@ public class DataBaseDAO implements DAO {
 
     /**
      * Класс, отвечающий за получение элемента по его id
+     *
      * @param routeId
      * @return
      * @throws SQLException
      */
-    private Route getRouteById(int routeId) throws SQLException{
-    Route route;
-    PreparedStatement preparedSelectRouteByIdStatement = null;
-    try{
-        preparedSelectRouteByIdStatement = dataBaseHandler.getPreparedStatement(SELECT_ROUTE_BY_ID,false);
-        preparedSelectRouteByIdStatement.setInt(1,routeId);
-        ResultSet resultSet = preparedSelectRouteByIdStatement.executeQuery();
-        System.out.println("запрос выполнен");
-        if (resultSet.next()){
-            route = new Route(
-                    resultSet.getString(DataBaseHandler.ROUTE_TABLE_NAME_COLUMN),
-                    resultSet.getInt(DataBaseHandler.ROUTE_TABLE_DISTANCE_COLUMN)
-            );
-        } else throw new SQLException();
-    } catch (SQLException exception) {
-        System.out.println("Произошла ошибка при выполнении данного запроса");
-        throw new SQLException(exception);
-    } finally {
-        dataBaseHandler.closePreparedStatement(preparedSelectRouteByIdStatement);
+    private Route getRouteById(int routeId) throws SQLException {
+        Route route;
+        PreparedStatement preparedSelectRouteByIdStatement = null;
+        try {
+            preparedSelectRouteByIdStatement = dataBaseHandler.getPreparedStatement(SELECT_ROUTE_BY_ID, false);
+            preparedSelectRouteByIdStatement.setInt(1, routeId);
+            ResultSet resultSet = preparedSelectRouteByIdStatement.executeQuery();
+            System.out.println("запрос выполнен");
+            if (resultSet.next()) {
+                route = new Route(
+                        resultSet.getString(DataBaseHandler.ROUTE_TABLE_NAME_COLUMN),
+                        resultSet.getInt(DataBaseHandler.ROUTE_TABLE_DISTANCE_COLUMN)
+                );
+            } else throw new SQLException();
+        } catch (SQLException exception) {
+            System.out.println("Произошла ошибка при выполнении данного запроса");
+            throw new SQLException(exception);
+        } finally {
+            dataBaseHandler.closePreparedStatement(preparedSelectRouteByIdStatement);
+        }
+        return route;
     }
-    return route;
-}
 
     /**
      * Класс, отвчеающий за добавление элемента
+     *
      * @param route
      * @param user
      * @return
@@ -254,189 +260,203 @@ public class DataBaseDAO implements DAO {
      * @throws SQLException
      */
     public Route insertRoute(Route route, User user) throws DataBaseException, SQLException {
-    Route route1;
-    PreparedStatement preparedInsertRouteStatement = null;
-    PreparedStatement preparedInsertCoordinatesStatement = null;
-    PreparedStatement preparedInsertLocationFromStatement = null;
-    PreparedStatement preparedInsertLocationToStatement = null;
-    try {
-        dataBaseHandler.setCommitMode();
-        dataBaseHandler.saveSQL();
+        Route route1;
+        PreparedStatement preparedInsertRouteStatement = null;
+        PreparedStatement preparedInsertCoordinatesStatement = null;
+        PreparedStatement preparedInsertLocationFromStatement = null;
+        PreparedStatement preparedInsertLocationToStatement = null;
+        try {
+            dataBaseHandler.setCommitMode();
+            dataBaseHandler.saveSQL();
 
-        ZonedDateTime creationDate = ZonedDateTime.now();
+            ZonedDateTime creationDate = ZonedDateTime.now();
 
-        preparedInsertRouteStatement = dataBaseHandler.getPreparedStatement(INSERT_INTO_ROUTE, true);
-        preparedInsertCoordinatesStatement = dataBaseHandler.getPreparedStatement(INSERT_COORDINATES_TABLE, true);
-        preparedInsertLocationFromStatement = dataBaseHandler.getPreparedStatement(INSERT_LOCATION_FROM_TABLE, true);
-        preparedInsertLocationToStatement = dataBaseHandler.getPreparedStatement(INSERT_LOCATION_TO_TABLE, true);
-        //TODO запрос хуйня переделывай
-        //preparedInsertRouteStatement.setString(1,route.getName());
+            preparedInsertRouteStatement = dataBaseHandler.getPreparedStatement(INSERT_INTO_ROUTE, true);
+            preparedInsertCoordinatesStatement = dataBaseHandler.getPreparedStatement(INSERT_COORDINATES_TABLE, true);
+            preparedInsertLocationFromStatement = dataBaseHandler.getPreparedStatement(INSERT_LOCATION_FROM_TABLE, true);
+            preparedInsertLocationToStatement = dataBaseHandler.getPreparedStatement(INSERT_LOCATION_TO_TABLE, true);
+            //TODO запрос хуйня переделывай
+            //preparedInsertRouteStatement.setString(1,route.getName());
 
-        preparedInsertRouteStatement.setString(1, route.getName());
-        preparedInsertRouteStatement.setInt(6, route.getDistance());
-        preparedInsertRouteStatement.setTime(2, Time.valueOf(String.valueOf(creationDate)));
-        preparedInsertCoordinatesStatement.setString(3, route.getCoordinates().toString());
-        preparedInsertLocationFromStatement.setString(4, route.getFrom().toString());
-        preparedInsertLocationToStatement.setString(5, route.getTo().toString());
+            preparedInsertRouteStatement.setString(1, route.getName());
+            preparedInsertRouteStatement.setInt(6, route.getDistance());
+            preparedInsertRouteStatement.setTime(2, Time.valueOf(String.valueOf(creationDate)));
+            preparedInsertCoordinatesStatement.setString(3, route.getCoordinates().toString());
+            preparedInsertLocationFromStatement.setString(4, route.getFrom().toString());
+            preparedInsertLocationToStatement.setString(5, route.getTo().toString());
 
-        if (preparedInsertRouteStatement.executeUpdate() == 0) throw new SQLException();
-        ResultSet generateRouteKeys = preparedInsertRouteStatement.getGeneratedKeys();
-        int routeId;
-        if (generateRouteKeys.next()) {
-            routeId = generateRouteKeys.getInt(1);
-        } else throw new SQLException();
-        //System.out.println('Запрос выполнен. Гуляй');
+            if (preparedInsertRouteStatement.executeUpdate() == 0) throw new SQLException();
+            ResultSet generateRouteKeys = preparedInsertRouteStatement.getGeneratedKeys();
+            int routeId;
+            if (generateRouteKeys.next()) {
+                routeId = generateRouteKeys.getInt(1);
+            } else throw new SQLException();
+            //System.out.println('Запрос выполнен. Гуляй');
 
-        route1 = new Route(
-                routeId,
-                route.getName(),
-                creationDate,
-                route.getCoordinates(),
-                route.getFrom(),
-                route.getTo(),
-                route.getDistance(),
-                user
-        );
-        dataBaseHandler.commit();
-        return route1;
+            route1 = new Route(
+                    routeId,
+                    route.getName(),
+                    creationDate,
+                    route.getCoordinates(),
+                    route.getFrom(),
+                    route.getTo(),
+                    route.getDistance(),
+                    user
+            );
+            dataBaseHandler.commit();
+            return route1;
 
-    }catch (SQLException sqlException){
-        System.out.println("Произошла ошибка при выполнении запроса на добавление нового объекта.");
-        dataBaseHandler.rollback();
-        throw new DataBaseException();
-    } finally {
-        dataBaseHandler.closePreparedStatement(preparedInsertCoordinatesStatement);
-        dataBaseHandler.closePreparedStatement(preparedInsertRouteStatement);
-        dataBaseHandler.closePreparedStatement(preparedInsertLocationToStatement);
-        dataBaseHandler.closePreparedStatement(preparedInsertLocationFromStatement);
-        dataBaseHandler.setNormalMode();
+        } catch (SQLException sqlException) {
+            System.out.println("Произошла ошибка при выполнении запроса на добавление нового объекта.");
+            dataBaseHandler.rollback();
+            throw new DataBaseException();
+        } finally {
+            dataBaseHandler.closePreparedStatement(preparedInsertCoordinatesStatement);
+            dataBaseHandler.closePreparedStatement(preparedInsertRouteStatement);
+            dataBaseHandler.closePreparedStatement(preparedInsertLocationToStatement);
+            dataBaseHandler.closePreparedStatement(preparedInsertLocationFromStatement);
+            dataBaseHandler.setNormalMode();
+        }
     }
-}
 
 
 //TODO проверить соответствие и работоспособность
+
     /**
      * Класс, отвечающий за обновление элемента по его ид
+     *
      * @param routeId
      * @param route
      * @throws DataBaseException
      * @throws SQLException
      */
     public void updateRouteId(int routeId, Route route) throws DataBaseException, SQLException {
-    PreparedStatement preparedUpdateRouteByIdStatement = null;
-    PreparedStatement preparedUpdateCoordinatesByIdStatement = null;
-    PreparedStatement preparedUpdateLocationFromStatement = null;
-    PreparedStatement preparedUpdateLocationToStatement = null;
-    try{
-        dataBaseHandler.setCommitMode();
-        dataBaseHandler.saveSQL();
-        preparedUpdateRouteByIdStatement = dataBaseHandler.getPreparedStatement(UPDATE_ROUTE_BY_ID,false);
-        preparedUpdateCoordinatesByIdStatement = dataBaseHandler.getPreparedStatement(UPDATE_COORDINATES_BY_ID,false);
-        preparedUpdateLocationFromStatement = dataBaseHandler.getPreparedStatement(UPDATE_LOCATION_FROM_BY_ID,false);
-        preparedUpdateLocationToStatement = dataBaseHandler.getPreparedStatement(UPDATE_LOCATION_TO_BY_ID,false);
+        PreparedStatement preparedUpdateRouteByIdStatement = null;
+        PreparedStatement preparedUpdateCoordinatesByIdStatement = null;
+        PreparedStatement preparedUpdateLocationFromStatement = null;
+        PreparedStatement preparedUpdateLocationToStatement = null;
+        try {
+            dataBaseHandler.setCommitMode();
+            dataBaseHandler.saveSQL();
+            preparedUpdateRouteByIdStatement = dataBaseHandler.getPreparedStatement(UPDATE_ROUTE_BY_ID, false);
+            preparedUpdateCoordinatesByIdStatement = dataBaseHandler.getPreparedStatement(UPDATE_COORDINATES_BY_ID, false);
+            preparedUpdateLocationFromStatement = dataBaseHandler.getPreparedStatement(UPDATE_LOCATION_FROM_BY_ID, false);
+            preparedUpdateLocationToStatement = dataBaseHandler.getPreparedStatement(UPDATE_LOCATION_TO_BY_ID, false);
 
-        if (route.getName() !=null) {
-            preparedUpdateRouteByIdStatement.setString(1, route.getName());
-            preparedUpdateRouteByIdStatement.setInt(2,routeId);
-        }
-        if (route.getDistance() > 1) {
-            preparedUpdateRouteByIdStatement.setInt(1, route.getDistance());
-            preparedUpdateRouteByIdStatement.setInt(2, routeId);
-        }
-        if (route.getCoordinates() != null) {
-            preparedUpdateCoordinatesByIdStatement.setString(1, route.getCoordinates().toString());
-            preparedUpdateCoordinatesByIdStatement.setInt(2, routeId);
-        }
-        if (route.getFrom() != null) {
-            preparedUpdateLocationFromStatement.setString(1, route.getFrom().toString());
-            preparedUpdateLocationFromStatement.setInt(2, routeId);
-        }
-        if (route.getTo() != null){
-            preparedUpdateLocationToStatement.setString(1,route.getTo().toString());
-            preparedUpdateLocationFromStatement.setInt(2, routeId);
-        }
+            if (route.getName() != null) {
+                preparedUpdateRouteByIdStatement.setString(1, route.getName());
+                preparedUpdateRouteByIdStatement.setInt(2, routeId);
+            }
+            if (route.getDistance() > 1) {
+                preparedUpdateRouteByIdStatement.setInt(1, route.getDistance());
+                preparedUpdateRouteByIdStatement.setInt(2, routeId);
+            }
+            if (route.getCoordinates() != null) {
+                preparedUpdateCoordinatesByIdStatement.setString(1, route.getCoordinates().toString());
+                preparedUpdateCoordinatesByIdStatement.setInt(2, routeId);
+            }
+            if (route.getFrom() != null) {
+                preparedUpdateLocationFromStatement.setString(1, route.getFrom().toString());
+                preparedUpdateLocationFromStatement.setInt(2, routeId);
+            }
+            if (route.getTo() != null) {
+                preparedUpdateLocationToStatement.setString(1, route.getTo().toString());
+                preparedUpdateLocationFromStatement.setInt(2, routeId);
+            }
 
-        dataBaseHandler.commit();
-    }catch (SQLException e){
-        System.out.println("Не удалось выполнить запрос UPDATE");
-        dataBaseHandler.rollback();
-        throw new DataBaseException();
-    } finally {
-        dataBaseHandler.closePreparedStatement(preparedUpdateLocationFromStatement);
-        dataBaseHandler.closePreparedStatement(preparedUpdateLocationToStatement);
-        dataBaseHandler.closePreparedStatement(preparedUpdateCoordinatesByIdStatement);
-        dataBaseHandler.closePreparedStatement(preparedUpdateRouteByIdStatement);
-        dataBaseHandler.setNormalMode();
+            dataBaseHandler.commit();
+        } catch (SQLException e) {
+            System.out.println("Не удалось выполнить запрос UPDATE");
+            dataBaseHandler.rollback();
+            throw new DataBaseException();
+        } finally {
+            dataBaseHandler.closePreparedStatement(preparedUpdateLocationFromStatement);
+            dataBaseHandler.closePreparedStatement(preparedUpdateLocationToStatement);
+            dataBaseHandler.closePreparedStatement(preparedUpdateCoordinatesByIdStatement);
+            dataBaseHandler.closePreparedStatement(preparedUpdateRouteByIdStatement);
+            dataBaseHandler.setNormalMode();
+        }
     }
-}
 
-public void removeById(int routeId) throws DataBaseException,SQLException {
-    PreparedStatement preparedRemoveRouteStatement = null;
-    PreparedStatement preparedRemoveCoordinatesStatement = null;
-    PreparedStatement preparedRemoveLocationFromStatement = null;
-    PreparedStatement preparedRemoveLocationToStatement = null;
-    try {
-        preparedRemoveRouteStatement = dataBaseHandler.getPreparedStatement(REMOVE_ROUTE_BY_ID, false);
-        preparedRemoveRouteStatement.setInt(1, getRouteById(routeId).getId());
+    public boolean removeById(int routeId) throws DataBaseException, SQLException {
+        PreparedStatement preparedRemoveRouteStatement = null;
+        PreparedStatement preparedRemoveCoordinatesStatement = null;
+        PreparedStatement preparedRemoveLocationFromStatement = null;
+        PreparedStatement preparedRemoveLocationToStatement = null;
+        try {
+            preparedRemoveRouteStatement = dataBaseHandler.getPreparedStatement(REMOVE_ROUTE_BY_ID, false);
+            preparedRemoveRouteStatement.setInt(1, getRouteById(routeId).getId());
 
-        preparedRemoveCoordinatesStatement = dataBaseHandler.getPreparedStatement(REMOVE_COORDINATES_BY_ID, false);
-        preparedRemoveRouteStatement.setInt(1, getRouteById(routeId).getId());
+            preparedRemoveCoordinatesStatement = dataBaseHandler.getPreparedStatement(REMOVE_COORDINATES_BY_ID, false);
+            preparedRemoveRouteStatement.setInt(1, getRouteById(routeId).getId());
 
-        preparedRemoveLocationFromStatement = dataBaseHandler.getPreparedStatement(REMOVE_LOCATION_FROM_BY_ID, false);
-        preparedRemoveRouteStatement.setInt(1, getRouteById(routeId).getId());
+            preparedRemoveLocationFromStatement = dataBaseHandler.getPreparedStatement(REMOVE_LOCATION_FROM_BY_ID, false);
+            preparedRemoveRouteStatement.setInt(1, getRouteById(routeId).getId());
 
-        preparedRemoveLocationToStatement = dataBaseHandler.getPreparedStatement(REMOVE_LOCATION_TO_BY_ID, false);
-        preparedRemoveRouteStatement.setInt(1, getRouteById(routeId).getId());
-        if (preparedRemoveRouteStatement.executeUpdate() == 0
-                && preparedRemoveCoordinatesStatement.executeUpdate() == 0
-                && preparedRemoveLocationFromStatement.executeUpdate() == 0
-                && preparedRemoveLocationToStatement.executeUpdate() == 0)
-            System.out.println("удалили элментик");
-    } catch (SQLException sqlException) {
-        System.out.println("Произошла ошибка при выполнении запроса DELETE");
-        throw new DataBaseException();
-    } finally {
-        dataBaseHandler.closePreparedStatement(preparedRemoveCoordinatesStatement);
-        dataBaseHandler.closePreparedStatement(preparedRemoveRouteStatement);
-        dataBaseHandler.closePreparedStatement(preparedRemoveLocationFromStatement);
-        dataBaseHandler.closePreparedStatement(preparedRemoveLocationToStatement);
+            preparedRemoveLocationToStatement = dataBaseHandler.getPreparedStatement(REMOVE_LOCATION_TO_BY_ID, false);
+            preparedRemoveRouteStatement.setInt(1, getRouteById(routeId).getId());
+            if (preparedRemoveRouteStatement.executeUpdate() == 0
+                    && preparedRemoveCoordinatesStatement.executeUpdate() == 0
+                    && preparedRemoveLocationFromStatement.executeUpdate() == 0
+                    && preparedRemoveLocationToStatement.executeUpdate() == 0)
+                System.out.println("удалили элментик");
+            return true;
+
+        } catch (SQLException sqlException) {
+            System.out.println("Произошла ошибка при выполнении запроса DELETE");
+            throw new DataBaseException();
+        } finally {
+            dataBaseHandler.closePreparedStatement(preparedRemoveCoordinatesStatement);
+            dataBaseHandler.closePreparedStatement(preparedRemoveRouteStatement);
+            dataBaseHandler.closePreparedStatement(preparedRemoveLocationFromStatement);
+            dataBaseHandler.closePreparedStatement(preparedRemoveLocationToStatement);
+            return false;
+        }
     }
-}
 
-public void clearCollection() throws DataBaseException,SQLException{
+    public void clearCollection() throws DataBaseException, SQLException {
         NavigableSet<Route> routes = getCollection();
-        for ( Route route: routes){
+        for (Route route : routes) {
             removeById(route.getId());
         }
-}
 
 
+    }
+//    public RouteDAO getDAO() {
+//        RouteInfo info = new RouteInfo();
+//    }
 
 
-
-
-
-
-//YES
+    //YES
     @Override
     public void create(Route route) {
     }
-//NO
+
+    //NO
     @Override
     public boolean update(int id, RouteInfo routeInfo) {
         return false;
     }
-//NO
+
+    //NO
     @Override
     public boolean delete(int id) {
+        try {
+            return removeById(id);
+        } catch (DataBaseException e) {
+
+        } catch (SQLException e) {
+        }
         return false;
     }
-//YES
+
+    //YES
     @Override
     public Deque<Route> getAll() {
         return null;
     }
-//NO
+
+    //NO
     @Override
     public void clear() {
 

@@ -8,6 +8,7 @@ import db.DataBaseHandler;
 import db.DataBaseUsersDolboeb;
 import interaction.Request;
 import interaction.Response;
+import interaction.User;
 import utils.RouteInfo;
 
 import java.util.List;
@@ -20,7 +21,7 @@ public abstract class ACommands {
         this.args = args;
     }
 
-    public abstract Response execute(RouteDAO routeDAO);
+    public abstract Response execute(DataBaseDAO dao);
 
     protected boolean isAsker;
     protected boolean isIdAsker;
@@ -45,10 +46,10 @@ public abstract class ACommands {
     }
 
     public Response response = new Response();
-    public DataBaseHandler dbHandler = new DataBaseHandler();
-    public DataBaseUsersDolboeb dbUserDolboeb = new DataBaseUsersDolboeb();
 
-    public DataBaseDAO dbdao = new DataBaseDAO(dbHandler, dbUserDolboeb);
+    public User user;
 
-
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

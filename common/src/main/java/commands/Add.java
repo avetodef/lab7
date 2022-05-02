@@ -2,12 +2,15 @@ package commands;
 
 
 import dao.RouteDAO;
+import db.DataBaseDAO;
+import exceptions.DataBaseException;
 import exceptions.ExitException;
 import interaction.Response;
 import interaction.Status;
 
 import utils.Route;
 
+import java.sql.SQLException;
 import java.util.NoSuchElementException;
 
 /**
@@ -17,7 +20,7 @@ public class Add extends ACommands{
     {
         isAsker = true;
     }
-    public Response execute(RouteDAO routeDAO) {
+    public Response execute(DataBaseDAO dao) {
 
         try {
 
@@ -25,7 +28,7 @@ public class Add extends ACommands{
                     info.fromY, info.nameFrom, info.toX, info.toY, info.nameTo,
                     info.distance);
 
-            routeDAO.create(route);
+            dao.insertRoute(route, user);
 
             response.msg("элемент добавлен в коллекцию").status(Status.OK);
         }
@@ -39,6 +42,14 @@ public class Add extends ACommands{
         catch (RuntimeException e) {
             response.msg("невозможно добавить элемент в коллекцию" + e.getMessage()).status(Status.COLLECTION_ERROR);
 
+        }
+        catch (SQLException throwables) {
+            //throwables.printStackTrace();
+            response.msg(throwables.getMessage()).status(Status.UNKNOWN_ERROR);
+        }
+
+        catch (DataBaseException e) {
+            response.msg(e.getMessage()).status(Status.UNKNOWN_ERROR);
         }
         //response.msg("я дебил даже не зашел в цикл").status(Status.SERVER_ERROR);
         //:(
