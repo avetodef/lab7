@@ -2,6 +2,7 @@ package commands;
 
 
 import dao.RouteDAO;
+import db.DataBaseDAO;
 import interaction.Response;
 import interaction.Status;
 
@@ -10,7 +11,7 @@ import interaction.Status;
  */
 public class Rzhaka extends ACommands{
     @Override
-    public Response execute(RouteDAO routeDAO) {
+    public Response execute(DataBaseDAO dao) {
         new Thread(new GifRzhaka()).start();
         return response.msg("hehe monkey").status(Status.OK);
     }

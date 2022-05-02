@@ -2,6 +2,8 @@ package commands;
 
 
 import dao.RouteDAO;
+import db.DataBaseDAO;
+import exceptions.DataBaseException;
 import interaction.Response;
 import interaction.Status;
 import org.bouncycastle.util.encoders.Hex;
@@ -16,13 +18,18 @@ import java.security.NoSuchAlgorithmException;
 public class Show extends ACommands {
 
     @Override
-    public Response execute(RouteDAO routeDAO) {
-        if (routeDAO.getAll().size() == 0) {
+    public Response execute(DataBaseDAO dao) {
+        if (dao.getAll().size() == 0) {
             response.msg("пусто").status(Status.COLLECTION_ERROR);
 
         }
-        else
-        response.status(Status.OK).msg(routeDAO.getCollection());
+        else {
+            try {
+                response.status(Status.OK).msg(dao.getCollection().toString());
+            } catch (DataBaseException e) {
+                System.out.println(" ");
+            }
+        }
 
         return response;
     }

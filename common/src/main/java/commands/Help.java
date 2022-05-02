@@ -2,6 +2,7 @@ package commands;
 
 
 import dao.RouteDAO;
+import db.DataBaseDAO;
 import interaction.Response;
 import interaction.Status;
 
@@ -10,7 +11,7 @@ import interaction.Status;
  */
 public class Help extends ACommands {
 
-    public Response execute(RouteDAO routeDAO) {
+    public Response execute(DataBaseDAO dao) {
 
        response.msg("help : вывести справку по доступным командам " +
                        System.lineSeparator() +

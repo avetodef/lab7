@@ -3,12 +3,15 @@ package commands;
 
 import console.Console;
 import dao.RouteDAO;
+import db.DataBaseDAO;
+import exceptions.DataBaseException;
 import interaction.Response;
 import interaction.Status;
 
 import utils.Route;
 import utils.RouteInfo;
 
+import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.Optional;
 
@@ -18,8 +21,8 @@ import java.util.Optional;
 public class AddIfMin extends ACommands{
     Console console = new Console();
 
-    public Response execute(RouteDAO routeDAO) {
-        Optional<Route> minRoute = routeDAO.getAll().stream().min(Comparator.comparingInt(Route::getDistance));
+    public Response execute(DataBaseDAO dao) {
+        Optional<Route> minRoute = dao.getAll().stream().min(Comparator.comparingInt(Route::getDistance));
 
         Integer minDistance = minRoute.map(Route::getDistance).orElse(Integer.MAX_VALUE);
         if (minDistance != 2) {
@@ -30,13 +33,22 @@ public class AddIfMin extends ACommands{
                     Route route = new Route(info.name, info.x, info.y, info.fromX,
                             info.fromY, info.nameFrom, info.toX, info.toY, info.nameTo,
                             info.distance);
-                    routeDAO.create(route);
+//                    routeDAO.create(route);
+                    dao.insertRoute(route, user);
                 } else {
                     response.msg("у нового элемента поле distance больше чем у минимального. вызовите команду заново с валидным полем distance")
                             .status(Status.USER_EBLAN_ERROR);
                 }
             } catch (RuntimeException e) {
                 response.status(Status.COLLECTION_ERROR).msg("невозможно добавить элемент в коллекцию: " + e.getMessage());
+            }
+            catch (SQLException throwables) {
+                //throwables.printStackTrace();
+                response.msg(throwables.getMessage()).status(Status.UNKNOWN_ERROR);
+            }
+
+            catch (DataBaseException e) {
+                response.msg(e.getMessage()).status(Status.UNKNOWN_ERROR);
             }
         }
         else{

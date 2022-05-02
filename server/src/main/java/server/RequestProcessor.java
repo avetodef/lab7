@@ -29,6 +29,7 @@ public class RequestProcessor extends RecursiveTask<Response>{
         ACommands command = CommandSaver.getCommand(JsonConverter.des(msg).getArgs());
         RouteInfo info = JsonConverter.des(msg).getInfo();
         command.setInfo(info);
+        command.setUser(JsonConverter.des(msg).getUser());
 
         return command.execute(dao);
     }

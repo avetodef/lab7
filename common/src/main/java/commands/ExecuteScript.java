@@ -2,6 +2,7 @@ package commands;
 
 
 import dao.RouteDAO;
+import db.DataBaseDAO;
 import exceptions.EmptyInputException;
 import file.FileManager;
 import interaction.Request;
@@ -27,7 +28,7 @@ public class ExecuteScript extends ACommands {
     public ExecuteScript() {
     }
 
-    public Response execute(RouteDAO routeDAO) {
+    public Response execute(DataBaseDAO dao) {
 
         String nameOfScript = args.get(1); //ok
 

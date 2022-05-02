@@ -2,6 +2,8 @@ package commands;
 
 
 import dao.RouteDAO;
+import db.DataBaseDAO;
+import db.DataBaseHandler;
 import file.FileManager;
 import interaction.Response;
 import interaction.Status;
@@ -11,17 +13,17 @@ import java.io.IOException;
 /**
  * Класс команды SAVE, предназначенный для сохранения элементов в коллекцию
  */
-public class Save {
+public class Save extends ACommands {
 
-    public static void execute(RouteDAO routeDAO) {
-        Response response = new Response();
-        FileManager writer = new FileManager();
+    public Response execute(DataBaseDAO dao) {
             try {
-                writer.save(routeDAO);
-
-            } catch (RuntimeException | IOException e) {
+                DataBaseHandler handler = new DataBaseHandler();
+                handler.saveSQL();
+            } catch (RuntimeException e) {
                 System.out.println(e.getMessage());
             }
+            response.msg("сохранено").status(Status.OK);
 
+            return response;
         }
     }

@@ -1,9 +1,11 @@
 package commands;
 
-
-import dao.RouteDAO;
+import db.DataBaseDAO;
+import exceptions.DataBaseException;
 import interaction.Response;
 import interaction.Status;
+
+import java.sql.SQLException;
 
 /**
  * Класс команды REMOVE BY ID, предназначенный для удаления элемента по его id
@@ -14,14 +16,15 @@ public class RemoveById extends ACommands {
     {
         isIdAsker = true;
     }
-    public Response execute(RouteDAO routeDAO) {
-        if (routeDAO.getAll().size() == 0) {
+    public Response execute(DataBaseDAO dao) {
+        if (dao.getAll().size() == 0) {
             response.setMsg("коллекция пустая. нечего удалять");
             response.setStatus(Status.COLLECTION_ERROR);
         } else {
             try {
                 int id = Integer.parseInt(args.get(1));
-                if (!routeDAO.delete(id))
+                //TODO тоже не уверена насколько это будет работать
+                if (!dao.removeById(id))
                     response.msg("нет элемента с таким id. введите команду заново с правильным id" ).
                             status(Status.USER_EBLAN_ERROR);
                  else
@@ -38,6 +41,10 @@ public class RemoveById extends ACommands {
             catch (RuntimeException e) {
                 response.msg("непредвиденная ошибка в классе команды: " + e.getMessage())
                         .status(Status.UNKNOWN_ERROR);
+            } catch (SQLException throwables) {
+                response.msg(throwables.getMessage()).status(Status.UNKNOWN_ERROR);
+            } catch (DataBaseException e) {
+                response.msg(e.getMessage()).status(Status.UNKNOWN_ERROR);
             }
 
         }

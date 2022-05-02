@@ -2,6 +2,7 @@ package commands;
 
 
 import dao.RouteDAO;
+import db.DataBaseDAO;
 import interaction.Response;
 import interaction.Status;
 
@@ -15,11 +16,11 @@ public class PrintUniqueDistance extends ACommands{
 
     static Set<Integer> distanceSet = new HashSet<>();
 
-    public Response execute(RouteDAO routeDAO) {
-        if (routeDAO.getAll().size() == 0)
+    public Response execute(DataBaseDAO dao) {
+        if (dao.getAll().size() == 0)
             response.msg("пусто").status(Status.COLLECTION_ERROR);
          else {
-            routeDAO.getAll().stream().forEach(r -> distanceSet.add(r.getDistance()));
+            dao.getAll().stream().forEach(r -> distanceSet.add(r.getDistance()));
 
             response.msg("уникальные значения поля distance: " + distanceSet.toString()).
                     status(Status.OK);
