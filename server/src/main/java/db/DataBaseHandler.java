@@ -25,7 +25,6 @@ public class DataBaseHandler {
     public static final String ROUTE_TABLE_NAME_COLUMN = "name";
     public static final String ROUTE_TABLE_DATE_COLUMN = "creation_date";
     public static final String ROUTE_TABLE_DISTANCE_COLUMN = "distance";
-    public static final String ROUTE_TABLE_NAME_DISTANCE_COLUMN = "name_of_distance";
     public static final String ROUTE_TABLE_USER_ID_COLUMN = "user_id";
     //составляющие таблицы USER_TABLE
     public static final String USER_TABLE_ID_COLUMN = "id";

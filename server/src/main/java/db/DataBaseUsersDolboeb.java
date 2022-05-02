@@ -48,7 +48,7 @@ public class DataBaseUsersDolboeb {
                 //ServerApp.logger.info("Выполнен запрос SELECT_USER_BY_ID.");
                 if (resultSet.next()) {
                     user = new User(
-                            resultSet.getString(DataBaseHandler.USER_TABLE_PASSWORD_COLUMN),
+                            resultSet.getString(DataBaseHandler.USER_TABLE_LOGIN_COLUMN),
                             resultSet.getString(DataBaseHandler.USER_TABLE_PASSWORD_COLUMN)
                     );
                 } else throw new SQLException();

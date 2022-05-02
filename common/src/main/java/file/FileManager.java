@@ -18,12 +18,11 @@ public class FileManager {
 
     private static String directory = System.getenv().get("collection.csv");
     private static String nameOfFile = System.getenv().get("collection.csv");
-    private static final String TEMP_FILE = "D:/collection_temp.csv";
+    private static final String TEMP_FILE = "C:/collection_temp.csv";
     File file = new File(directory);
 
     /**
      * Метод записи данных о коллекции в файл
-     *
      * @param routeDAO
      */
 

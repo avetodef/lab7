@@ -3,6 +3,8 @@ package utils;
 
 
 
+import interaction.User;
+
 import java.sql.Time;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -20,6 +22,12 @@ public class Route {
     private Integer distance; //Поле не может быть null, Значение поля должно быть больше 1
 
     public Route(int id, String name, double x, Double y, Time creationdate, double from_x, Long from_y, String name_from, int to_x, float to_y, String name_to, Integer distance) {
+    }
+
+    public Route(String string, int anInt) {
+    }
+
+    public Route(int routeId, String name, ZonedDateTime creationDate, Coordinates coordinates, Location from, utils.loc.Location to, int distance, User user) {
     }
 
 //    public static void builder() {
