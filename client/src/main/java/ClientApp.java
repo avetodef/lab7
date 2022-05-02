@@ -1,3 +1,4 @@
+import ASCII.ASCIIArt;
 import commands.VideoRzhaka;
 import console.ConsoleOutputer;
 import console.ConsoleReader;
@@ -93,7 +94,8 @@ public class ClientApp implements Runnable {
 
                         Request request = new Request(input, null, user);
 
-                        ASCIIArt.ifExit(input, o);
+                        if (input.contains("exit"))
+                            Exit.execute();
 
                         if (input.contains("mega_rzhaka"))
                             new Thread(new VideoRzhaka()).start();

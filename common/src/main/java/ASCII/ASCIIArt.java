@@ -1,3 +1,4 @@
+package ASCII;
 
 import console.ConsoleOutputer;
 
@@ -8,7 +9,7 @@ import java.util.List;
 
 public class ASCIIArt {
 
-    protected static void greetings(ConsoleOutputer output) {
+    public static void greetings(ConsoleOutputer output) {
         ASCIIArtService.printASCII("LABA 7", "red", "%");
         output.printWhite("______________________________________________________________________________________________________________________________________________________" + System.lineSeparator());
         output.printRed(" _______               _______\n" +
@@ -69,28 +70,6 @@ public class ASCIIArt {
 //                "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
 
 
-    }
-
-    protected static void ifExit(List<String> command, ConsoleOutputer output) {
-
-        if (command.contains("exit")) {
-
-//            output.printPurple("""
-//                       _______________                        |*\\_/*|________
-//                      |  ___________  |     .-.     .-.      ||_/-\\_|______  |
-//                      | |            | |   .****. .****.     | |           | |
-//                      | |   0   0    | |   .*****.*****.     | |   0   0   | |
-//                      | |     -      | |    .*********.      | |     -     | |
-//                      | |   \\___/    | |     .*******.       | |   \\___/   | |
-//                      | |___CLIENT___| |      .*****.        | |___SERVER__| |
-//                      |_____|\\_/|_____|        .***.         |_______________|
-//                        _|__|/ \\|_|_.............*.............._|________|_
-//                       / ********** \\          ПОКА             / ********** \\
-//                     /  ************  \\                      /  ************  \\
-//                    --------------------                    --------------------""");
-
-            Exit.execute();
-        }
     }
 }
 

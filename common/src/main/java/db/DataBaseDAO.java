@@ -20,7 +20,6 @@ import java.util.TreeSet;
 public class DataBaseDAO implements DAO {
 //TODO прописать методы для работы с эскуэль (новое дао(говно))
 
-
     //ROUTE
     private final String SELECT_ALL_ROUTE = "SELECT * FROM " + DataBaseHandler.ROUTE_TABLE;
 
@@ -410,19 +409,6 @@ public void clearCollection() throws DataBaseException,SQLException{
             removeById(route.getId());
         }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

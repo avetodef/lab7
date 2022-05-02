@@ -3,6 +3,7 @@ package server;
 import console.ConsoleOutputer;
 import interaction.Response;
 import interaction.Status;
+import interaction.User;
 import server.ClientHandler;
 
 import java.io.*;
@@ -35,6 +36,8 @@ public class ServerApp {
                     Socket client = serverSocket.accept();
                     output.printPurple("Клиент подключился ");
                     ClientHandler clientHandler = new ClientHandler(client);
+
+
                     new Thread(clientHandler).start();
 
                 } catch (SocketException e) {

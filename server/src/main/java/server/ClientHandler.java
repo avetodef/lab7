@@ -4,8 +4,11 @@ import commands.Save;
 import console.ConsoleOutputer;
 import dao.RouteDAO;
 import file.FileManager;
+import interaction.Request;
 import interaction.Response;
 import interaction.Status;
+import interaction.User;
+import json.JsonConverter;
 import utils.IdGenerator;
 
 import java.io.*;
@@ -21,12 +24,16 @@ public class ClientHandler implements Runnable {
 
     private final Socket clientSocket;
     private final ConsoleOutputer output = new ConsoleOutputer();
-    private final FileManager manager = new FileManager();
+    FileManager manager = new FileManager();
     private final RouteDAO dao = manager.read();
 
-    private final ForkJoinPool forkJoinPool = ForkJoinPool.commonPool();
+    private final ForkJoinPool forkJoinPool = new ForkJoinPool(3);
     private final ExecutorService fixedThreadPool = Executors.newFixedThreadPool(3);
     private final Lock locker = new ReentrantLock();
+
+    public Request request;
+    public User user;
+
 
     public ClientHandler(Socket clientSocket) {
         this.clientSocket = clientSocket;
@@ -57,6 +64,10 @@ public class ClientHandler implements Runnable {
                     locker.lock();
                     String clientMessage = this.fixedThreadPool.submit(new RequestReader(socketInputStream)).get();
                     locker.unlock();
+
+//TODO вот здесь получен юзер
+                    request = JsonConverter.des(clientMessage);
+                    user = request.getUser();
 
                     locker.lock();
                     Response serverResponse = this.forkJoinPool.invoke(new RequestProcessor(clientMessage, dao));

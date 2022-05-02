@@ -1,3 +1,4 @@
+import ASCII.ASCIIArt;
 import console.ConsoleOutputer;
 import exceptions.ExitException;
 import interaction.User;
@@ -78,9 +79,7 @@ public class Authorization {
                         return new User(newUsername, PasswordHandler.encode(newPassword), id);
                     }
                     case "exit": {
-                        List<String> input = new ArrayList<>();
-                        input.add("exit");
-                        ASCIIArt.ifExit(input, new ConsoleOutputer());
+                        Exit.execute();
                     }
                     case "admin": {
                         isAuth = true;

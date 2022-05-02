@@ -3,6 +3,9 @@ package commands;
 
 
 import dao.RouteDAO;
+import db.DataBaseDAO;
+import db.DataBaseHandler;
+import db.DataBaseUsersDolboeb;
 import interaction.Request;
 import interaction.Response;
 import utils.RouteInfo;
@@ -42,6 +45,10 @@ public abstract class ACommands {
     }
 
     public Response response = new Response();
+    public DataBaseHandler dbHandler = new DataBaseHandler();
+    public DataBaseUsersDolboeb dbUserDolboeb = new DataBaseUsersDolboeb();
+
+    public DataBaseDAO dbdao = new DataBaseDAO(dbHandler, dbUserDolboeb);
 
 
 }
