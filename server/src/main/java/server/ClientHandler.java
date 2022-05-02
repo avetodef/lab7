@@ -6,7 +6,6 @@ import dao.RouteDAO;
 import db.DataBaseDAO;
 import db.DataBaseHandler;
 import db.DataBaseUsersDolboeb;
-import file.FileManager;
 import interaction.Request;
 import interaction.Response;
 import interaction.Status;
@@ -27,12 +26,8 @@ public class ClientHandler implements Runnable {
 
     private final Socket clientSocket;
     private final ConsoleOutputer output = new ConsoleOutputer();
-    public DataBaseHandler dbHandler = new DataBaseHandler();
-    public DataBaseUsersDolboeb dbUserDolboeb = new DataBaseUsersDolboeb();
-    public DataBaseDAO dbdao = new DataBaseDAO(dbHandler, dbUserDolboeb);
     //TODO переписать на скл
-    FileManager manager = new FileManager();
-    private final RouteDAO dao = manager.read();
+    private DataBaseDAO dao = new DataBaseDAO(new DataBaseHandler(), new DataBaseUsersDolboeb());
 
     private final ForkJoinPool forkJoinPool = new ForkJoinPool(3);
     private final ExecutorService fixedThreadPool = Executors.newFixedThreadPool(3);
@@ -83,11 +78,12 @@ public class ClientHandler implements Runnable {
                     locker.lock();
                     this.fixedThreadPool.execute(new ResponseSender(clientSocket, socketOutputStream, dataOutputStream, serverResponse));
                     locker.unlock();
-
-                    save.execute(dao);
+                    //TODO выкидывает нуллпоинтер, наверное потому что у меня нет бд
+                    //save.execute(dao);
 
                 } catch (NullPointerException e) {
                     errorResponse.setMsg("Введённой вами команды не существует. Попробуйте ввести другую команду.");
+                    e.printStackTrace();
 
                     this.fixedThreadPool.execute(new ResponseSender(clientSocket, socketOutputStream, dataOutputStream, errorResponse));
 

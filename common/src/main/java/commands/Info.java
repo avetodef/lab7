@@ -12,7 +12,7 @@ import interaction.Status;
 public class Info extends ACommands {
 
     public Response execute(DataBaseDAO dao) {
-//TODO мне кажется тут будет не то что надо...есть такое подозрение
+//TODO по другому написать команду инфо
         response.msg(dao.toString()).status(Status.OK);
 
         return response;

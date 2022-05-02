@@ -3,6 +3,7 @@ package server;
 import commands.ACommands;
 import commands.CommandSaver;
 import dao.RouteDAO;
+import db.DataBaseDAO;
 import interaction.Response;
 import json.JsonConverter;
 import utils.RouteInfo;
@@ -11,9 +12,9 @@ import java.util.concurrent.RecursiveTask;
 public class RequestProcessor extends RecursiveTask<Response>{
 
     private final String msg;
-    private final RouteDAO dao;
+    private final DataBaseDAO dao;
 
-    public RequestProcessor(String msg, RouteDAO dao) {
+    public RequestProcessor(String msg, DataBaseDAO dao) {
         this.msg = msg;
         this.dao = dao;
     }

@@ -4,8 +4,6 @@ package commands;
 import dao.RouteDAO;
 import db.DataBaseDAO;
 import exceptions.EmptyInputException;
-import file.FileManager;
-import interaction.Request;
 import interaction.Response;
 import interaction.Status;
 import java.io.IOException;
@@ -21,9 +19,6 @@ import java.util.List;
  */
 
 public class ExecuteScript extends ACommands {
-
-    private final FileManager manager = new FileManager();
-    private final RouteDAO dao = manager.read();
 
     public ExecuteScript() {
     }
