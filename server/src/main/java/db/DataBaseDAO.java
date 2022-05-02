@@ -1,6 +1,5 @@
 package db;
 import dao.DAO;
-import dao.RouteDAO;
 import exceptions.DataBaseException;
 import interaction.User;
 import utils.Route;
@@ -315,6 +314,8 @@ public class DataBaseDAO implements DAO {
     }
 }
 
+
+//TODO проверить соответствие и работоспособность
     /**
      * Класс, отвечающий за обновление элемента по его ид
      * @param routeId
@@ -340,17 +341,83 @@ public class DataBaseDAO implements DAO {
             preparedUpdateRouteByIdStatement.setInt(2,routeId);
         }
         if (route.getDistance() > 1) {
-            preparedUpdateRouteByIdStatement.setInt(1,route.getDistance());
-            preparedUpdateRouteByIdStatement.setInt(2,routeId);
-
-
-
+            preparedUpdateRouteByIdStatement.setInt(1, route.getDistance());
+            preparedUpdateRouteByIdStatement.setInt(2, routeId);
+        }
+        if (route.getCoordinates() != null) {
+            preparedUpdateCoordinatesByIdStatement.setString(1, route.getCoordinates().toString());
+            preparedUpdateCoordinatesByIdStatement.setInt(2, routeId);
+        }
+        if (route.getFrom() != null) {
+            preparedUpdateLocationFromStatement.setString(1, route.getFrom().toString());
+            preparedUpdateLocationFromStatement.setInt(2, routeId);
+        }
+        if (route.getTo() != null){
+            preparedUpdateLocationToStatement.setString(1,route.getTo().toString());
+            preparedUpdateLocationFromStatement.setInt(2, routeId);
         }
 
-
-
+        dataBaseHandler.commit();
+    }catch (SQLException e){
+        System.out.println("Не удалось выполнить запрос UPDATE");
+        dataBaseHandler.rollback();
+        throw new DataBaseException();
+    } finally {
+        dataBaseHandler.closePreparedStatement(preparedUpdateLocationFromStatement);
+        dataBaseHandler.closePreparedStatement(preparedUpdateLocationToStatement);
+        dataBaseHandler.closePreparedStatement(preparedUpdateCoordinatesByIdStatement);
+        dataBaseHandler.closePreparedStatement(preparedUpdateRouteByIdStatement);
+        dataBaseHandler.setNormalMode();
     }
 }
+
+public void removeById(int routeId) throws DataBaseException,SQLException {
+    PreparedStatement preparedRemoveRouteStatement = null;
+    PreparedStatement preparedRemoveCoordinatesStatement = null;
+    PreparedStatement preparedRemoveLocationFromStatement = null;
+    PreparedStatement preparedRemoveLocationToStatement = null;
+    try {
+        preparedRemoveRouteStatement = dataBaseHandler.getPreparedStatement(REMOVE_ROUTE_BY_ID, false);
+        preparedRemoveRouteStatement.setInt(1, getRouteById(routeId).getId());
+
+        preparedRemoveCoordinatesStatement = dataBaseHandler.getPreparedStatement(REMOVE_COORDINATES_BY_ID, false);
+        preparedRemoveRouteStatement.setInt(1, getRouteById(routeId).getId());
+
+        preparedRemoveLocationFromStatement = dataBaseHandler.getPreparedStatement(REMOVE_LOCATION_FROM_BY_ID, false);
+        preparedRemoveRouteStatement.setInt(1, getRouteById(routeId).getId());
+
+        preparedRemoveLocationToStatement = dataBaseHandler.getPreparedStatement(REMOVE_LOCATION_TO_BY_ID, false);
+        preparedRemoveRouteStatement.setInt(1, getRouteById(routeId).getId());
+        if (preparedRemoveRouteStatement.executeUpdate() == 0
+                && preparedRemoveCoordinatesStatement.executeUpdate() == 0
+                && preparedRemoveLocationFromStatement.executeUpdate() == 0
+                && preparedRemoveLocationToStatement.executeUpdate() == 0)
+            System.out.println("удалили элментик");
+    } catch (SQLException sqlException) {
+        System.out.println("Произошла ошибка при выполнении запроса DELETE");
+        throw new DataBaseException();
+    } finally {
+        dataBaseHandler.closePreparedStatement(preparedRemoveCoordinatesStatement);
+        dataBaseHandler.closePreparedStatement(preparedRemoveRouteStatement);
+        dataBaseHandler.closePreparedStatement(preparedRemoveLocationFromStatement);
+        dataBaseHandler.closePreparedStatement(preparedRemoveLocationToStatement);
+    }
+}
+
+public void clearCollection() throws DataBaseException,SQLException{
+        NavigableSet<Route> routes = getCollection();
+        for ( Route route: routes){
+            removeById(route.getId());
+        }
+}
+
+
+
+
+
+
+
+
 
 
 

@@ -4,12 +4,18 @@ plugins {
 
 jar {
     manifest {
-        attributes "Main-Class": "java/MainServer.java"
+        attributes "Main-Class": "server.MainServer"
     }
 
     from {
         configurations.compileClasspath.collect { it.isDirectory() ? it : zipTree(it) }
     }
+
+exclude{
+    "META-INF/LICENSE.txt"
+}
+
+    setDuplicatesStrategy(DuplicatesStrategy.EXCLUDE)
 }
 
 repositories {

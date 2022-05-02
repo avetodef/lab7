@@ -48,9 +48,12 @@ public class DataBaseUsersDolboeb {
                 //ServerApp.logger.info("Выполнен запрос SELECT_USER_BY_ID.");
                 if (resultSet.next()) {
                     user = new User(
+
                             resultSet.getString(DataBaseHandler.USER_TABLE_LOGIN_COLUMN),
-                            resultSet.getString(DataBaseHandler.USER_TABLE_PASSWORD_COLUMN)
+                            resultSet.getString(DataBaseHandler.USER_TABLE_PASSWORD_COLUMN),1
                     );
+                            //TODO сюда добавила рандомное число как айди. надо поменять в будующем
+
                 } else throw new SQLException();
             } catch (SQLException exception) {
                 System.err.println("Произошла ошибка при выполнении запроса SELECT_USER_BY_ID!");
@@ -125,6 +128,7 @@ public class DataBaseUsersDolboeb {
          *
          * @param user User.
          * @return Status of insert.
+
          */
         public boolean insertUser(User user)  {
             PreparedStatement preparedInsertUserStatement = null;
