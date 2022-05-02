@@ -9,7 +9,7 @@ import java.util.List;
 public class ASCIIArt {
 
     protected static void greetings(ConsoleOutputer output) {
-        ASCIIArtService.printASCII("LABA 7", "red");
+        ASCIIArtService.printASCII("LABA 7", "red", "%");
         output.printWhite("______________________________________________________________________________________________________________________________________________________" + System.lineSeparator());
         output.printRed(" _______               _______\n" +
                 "|@|@|@|@|             |@|@|@|@|\n" +
@@ -97,7 +97,7 @@ public class ASCIIArt {
 class ASCIIArtService {
     private static final ConsoleOutputer o = new ConsoleOutputer();
 
-    public static void printASCII(String msg, String colour){
+    public static void printASCII(String msg, String colour, String character){
         try{
 
         int width = 150;
@@ -120,7 +120,7 @@ class ASCIIArtService {
             StringBuilder sb = new StringBuilder();
             for (int x = 0; x < width; x++) {
 
-                sb.append(image.getRGB(x, y) == -16777216 ? " " : "$");
+                sb.append(image.getRGB(x, y) == -16777216 ? " " : character);
 
             }
 
