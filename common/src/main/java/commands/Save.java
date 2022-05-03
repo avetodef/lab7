@@ -9,21 +9,28 @@ import interaction.Response;
 import interaction.Status;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 /**
  * Класс команды SAVE, предназначенный для сохранения элементов в коллекцию
  */
-public class Save extends ACommands {
+public class Save  {
 
-    public Response execute(DataBaseDAO dao) {
+    public void execute() {
             try {
                 DataBaseHandler handler = new DataBaseHandler();
-                handler.saveSQL();
+                try {
+                    handler.saveSQL();
+                }
+                catch (SQLException e){
+                    e.printStackTrace();
+                }
             } catch (RuntimeException e) {
-                System.out.println(e.getMessage());
+                System.out.println(e.getMessage() + " save");
+                e.printStackTrace();
             }
-            response.msg("сохранено").status(Status.OK);
+        System.out.println("saved ");
 
-            return response;
+
         }
     }

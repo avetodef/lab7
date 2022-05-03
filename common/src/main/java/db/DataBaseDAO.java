@@ -7,11 +7,8 @@ import interaction.User;
 import utils.Route;
 import utils.RouteInfo;
 
-import java.sql.PreparedStatement;
-import java.sql.Time;
+import java.sql.*;
 import java.time.ZonedDateTime;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Deque;
 import java.util.NavigableSet;
 import java.util.TreeSet;
@@ -115,6 +112,8 @@ public class DataBaseDAO implements DAO {
     private DataBaseHandler dataBaseHandler;
     private DataBaseUsersDolboeb dataBaseUsersDolboeb;
 
+    protected Date creationDate;
+
 
     public DataBaseDAO(DataBaseHandler dataBaseHandler, DataBaseUsersDolboeb dataBaseUsersDolboeb) {
         this.dataBaseHandler = dataBaseHandler;
@@ -184,7 +183,7 @@ public class DataBaseDAO implements DAO {
      * @return
      * @throws DataBaseException
      */
-    public NavigableSet<Route> getCollection() throws DataBaseException {
+    public NavigableSet<Route> getCollection() throws DataBaseException, SQLException {
         NavigableSet<Route> routes = new TreeSet<>();
         PreparedStatement preparedSelectAllStatement = null;
         try {

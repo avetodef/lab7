@@ -16,7 +16,7 @@ public class ServerApp {
 
     ConsoleOutputer output = new ConsoleOutputer();
 
-    protected void mainServerLoop() throws IOException {
+    protected void mainServerLoop() {
 
         Response errorResponse = new Response();
         errorResponse.setStatus(Status.SERVER_ERROR);
@@ -36,7 +36,6 @@ public class ServerApp {
                     Socket client = serverSocket.accept();
                     output.printPurple("Клиент подключился ");
                     ClientHandler clientHandler = new ClientHandler(client);
-
 
                     new Thread(clientHandler).start();
 

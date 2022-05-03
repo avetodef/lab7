@@ -72,7 +72,7 @@ public class DataBaseUsersDolboeb {
          * @return Result set.
          */
         //throws DatabaseHandlingException
-        public boolean checkUserByUsernameAndPassword(User user) {
+        public boolean checkUserByUsernameAndPassword(User user) throws SQLException {
             PreparedStatement preparedSelectUserByUsernameAndPasswordStatement = null;
             try {
                 preparedSelectUserByUsernameAndPasswordStatement =
@@ -99,7 +99,7 @@ public class DataBaseUsersDolboeb {
          * @param user User.
          * @return User id.
          */
-        public long getUserIdByUsername(User user) {
+        public long getUserIdByUsername(User user) throws SQLException {
             int userId = 0;
             PreparedStatement preparedSelectUserByUsernameStatement = null;
             try {
@@ -130,7 +130,7 @@ public class DataBaseUsersDolboeb {
          * @return Status of insert.
 
          */
-        public boolean insertUser(User user)  {
+        public boolean insertUser(User user) throws SQLException {
             PreparedStatement preparedInsertUserStatement = null;
             try {
                 if (getUserIdByUsername(user) != -1) return false;

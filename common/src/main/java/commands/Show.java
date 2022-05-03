@@ -11,6 +11,7 @@ import org.bouncycastle.util.encoders.Hex;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.SQLException;
 
 /**
  * Класс команды SHOW, предназначенный для вывода коллекции на консоль
@@ -26,7 +27,7 @@ public class Show extends ACommands {
         else {
             try {
                 response.status(Status.OK).msg(dao.getCollection().toString());
-            } catch (DataBaseException e) {
+            } catch (DataBaseException | SQLException e) {
                 System.out.println(" ");
             }
         }

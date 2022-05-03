@@ -2,10 +2,8 @@ package server;
 
 import commands.Save;
 import console.ConsoleOutputer;
-import dao.RouteDAO;
 import db.DataBaseDAO;
-import db.DataBaseHandler;
-import db.DataBaseUsersDolboeb;
+import db.TableManager;
 import interaction.Request;
 import interaction.Response;
 import interaction.Status;
@@ -27,7 +25,9 @@ public class ClientHandler implements Runnable {
     private final Socket clientSocket;
     private final ConsoleOutputer output = new ConsoleOutputer();
     //TODO переписать на скл
-    private DataBaseDAO dao = new DataBaseDAO(new DataBaseHandler(), new DataBaseUsersDolboeb());
+    private TableManager tableManager = new TableManager();
+
+    private DataBaseDAO dao = tableManager.read();
 
     private final ForkJoinPool forkJoinPool = new ForkJoinPool(3);
     private final ExecutorService fixedThreadPool = Executors.newFixedThreadPool(3);
@@ -79,7 +79,12 @@ public class ClientHandler implements Runnable {
                     this.fixedThreadPool.execute(new ResponseSender(clientSocket, socketOutputStream, dataOutputStream, serverResponse));
                     locker.unlock();
                     //TODO выкидывает нуллпоинтер, наверное потому что у меня нет бд
-                    //save.execute(dao);
+                    try {
+                        save.execute();
+                    }
+                    catch (NullPointerException e){
+                        e.printStackTrace();
+                    }
 
                 } catch (NullPointerException e) {
                     errorResponse.setMsg("Введённой вами команды не существует. Попробуйте ввести другую команду.");
@@ -90,11 +95,11 @@ public class ClientHandler implements Runnable {
                 } catch (NoSuchElementException e) {
                     //throw new ExitException("кнтрл д момент...");
                 } catch (Exception e) {
-                    System.out.println(" ");
+                    System.out.println(e.getMessage() + "Exc clientHandler");
                 }
             }
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            System.out.println(e.getMessage() + "IO clientHandler");
         }
     }
 }

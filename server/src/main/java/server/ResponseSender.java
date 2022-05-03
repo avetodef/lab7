@@ -41,7 +41,7 @@ public class ResponseSender implements Runnable {
             dataOutputStream.writeUTF(JsonConverter.serResponse(response));
 
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            System.out.println(e.getMessage() + " response sender");
         }
 
     }

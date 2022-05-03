@@ -1,4 +1,4 @@
-package file;
+package db;
 
 import dao.RouteDAO;
 import utils.Route;
@@ -6,6 +6,7 @@ import utils.RouteInfo;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
 /**
  * Класс, который позволяет осуществлять корректную запись данных в файл
  */
-public class FileManager {
+public class TableManager {
 
 
     private static String directory = System.getenv().get("collection.csv");
@@ -52,7 +53,7 @@ public class FileManager {
 
 
 
-    public RouteDAO read() {
+    public DataBaseDAO read() {
         File file = new File(nameOfFile);
         String input = " ";
         if (!file.exists()) {
@@ -79,18 +80,19 @@ public class FileManager {
             input = bos.toString();
 
         } catch (IOException e) {
-//            FileManager.createTmpFile();
-            return new RouteDAO();
+//            TableManager.createTmpFile();
+            return new DataBaseDAO(new DataBaseHandler(), new DataBaseUsersDolboeb());
         }
 
         List<String> lines = new ArrayList<>(Arrays.asList(input.split(System.lineSeparator())));
-        RouteDAO dao = new RouteDAO();
+        DataBaseDAO dao = new DataBaseDAO(new DataBaseHandler(), new DataBaseUsersDolboeb());
+        //RouteDAO dao = new RouteDAO();
         try {
             for (int i = 0; i < lines.size(); i++) {
                 String line = lines.get(i);
                 List<String> lineSplit = Arrays.asList(line.split(","));
                 if (i == 0)
-                    dao.initDate = lineSplit.get(0);
+                    dao.creationDate = Date.valueOf(lineSplit.get(0));
 
                 else {
                     RouteInfo info = new RouteInfo(lineSplit);
@@ -98,8 +100,8 @@ public class FileManager {
                 }
             }
         } catch (RuntimeException e) {
-            System.out.println(e.getMessage());
-            return new RouteDAO();
+            System.out.println(e.getMessage() + " table manager");
+            return new DataBaseDAO(new DataBaseHandler(), new DataBaseUsersDolboeb());
         }
         return dao;
     }

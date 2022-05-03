@@ -27,12 +27,12 @@ public class Authorization {
                         while (true) {
                             o.printNormal("придумай юзернейм");
                             String username = sc.nextLine();
-//
-//                            if (такой логин есть в базе данных){
-//                                o.printNormal("этот юзернейм занят");
-//                            }
-//                            else
-//                            {
+
+                            /*if (такой логин есть в базе данных){
+                                o.printNormal("этот юзернейм занят");
+                            }
+                            else
+                            {*/
                             o.printNormal("теперь пароль");
                             String password = PasswordHandler.encode(sc.nextLine());
 
