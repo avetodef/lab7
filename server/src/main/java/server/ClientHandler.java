@@ -62,21 +62,28 @@ public class ClientHandler implements Runnable {
 
                     output.printWhite("готов принимать запросы от клиента");
 
-                    locker.lock();
-                    String clientMessage = this.fixedThreadPool.submit(new RequestReader(socketInputStream)).get();
-                    locker.unlock();
+//                    locker.lock();
+//                    String clientMessage = this.fixedThreadPool.submit(new RequestReader(socketInputStream)).get();
+//                    locker.unlock();
+
+
+                    //locker.lock();
+                    String msg = fixedThreadPool.submit(new RequestReader(socketInputStream, tableManager, dao, forkJoinPool, dataOutputStream)).get();
+                    //locker.unlock();
+                    System.out.println(msg);
+
 
 //TODO вот здесь получен юзер
-                    request = JsonConverter.des(clientMessage);
-                    user = request.getUser();
+//                    request = JsonConverter.des(clientMessage);
+//                    user = request.getUser();
+//
+//                    locker.lock();
+//                    Response serverResponse = this.forkJoinPool.invoke(new RequestProcessor(clientMessage, dao));
+//                    locker.unlock();
 
-                    locker.lock();
-                    Response serverResponse = this.forkJoinPool.invoke(new RequestProcessor(clientMessage, dao));
-                    locker.unlock();
-
-                    locker.lock();
-                    this.fixedThreadPool.execute(new ResponseSender(clientSocket, socketOutputStream, dataOutputStream, serverResponse));
-                    locker.unlock();
+//                    locker.lock();
+//                    this.fixedThreadPool.execute(new ResponseSender(clientSocket, socketOutputStream, dataOutputStream, serverResponse));
+//                    locker.unlock();
                     //TODO выкидывает нуллпоинтер, наверное потому что у меня нет бд
                     try {
                         save.execute();
@@ -87,9 +94,8 @@ public class ClientHandler implements Runnable {
 
                 } catch (NullPointerException e) {
                     errorResponse.setMsg("Введённой вами команды не существует. Попробуйте ввести другую команду.");
-                    e.printStackTrace();
 
-                    this.fixedThreadPool.execute(new ResponseSender(clientSocket, socketOutputStream, dataOutputStream, errorResponse));
+                    this.fixedThreadPool.execute(new ResponseSender(dataOutputStream, errorResponse));
 
                 } catch (NoSuchElementException e) {
                     //throw new ExitException("кнтрл д момент...");
