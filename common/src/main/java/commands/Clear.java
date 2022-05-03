@@ -40,4 +40,5 @@ public class Clear extends ACommands{
                     .status(Status.OK);
             return response;
     }
+
 }
