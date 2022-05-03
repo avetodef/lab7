@@ -18,6 +18,8 @@ dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
     implementation 'commons-dbcp:commons-dbcp:1.4'
+    implementation 'org.postgresql:postgresql:42.3.4'
+
 
 }
 

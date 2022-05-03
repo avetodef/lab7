@@ -21,6 +21,7 @@ public class Save  {
                 DataBaseHandler handler = new DataBaseHandler();
                 try {
                     handler.saveSQL();
+                    System.out.println("saved");
                 }
                 catch (SQLException e){
                     e.printStackTrace();
@@ -29,7 +30,7 @@ public class Save  {
                 System.out.println(e.getMessage() + " save");
                 e.printStackTrace();
             }
-        System.out.println("saved ");
+        //System.out.println("saved ");
 
 
         }

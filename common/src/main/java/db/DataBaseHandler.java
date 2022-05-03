@@ -81,7 +81,8 @@ public class DataBaseHandler {
     public void connectToDataBase() {
         try {
         //    connection = DriverManager.getConnection(login, URL, password);
-            connection = basepool.getConnection("postgres","lterm54201");
+//            connection = basepool.getConnection("postgres","lterm54201");
+            connection = basepool.getConnection();
             System.out.println("Соединение прервано.");
             //ServerApp.Logger.info("Соединение с базой данных установлено.");
 
@@ -105,7 +106,8 @@ public class DataBaseHandler {
 
     public PreparedStatement getPreparedStatement(String sqlStatement, boolean generateKeys) throws SQLException {
         PreparedStatement preparedStatement;
-        connection = basepool.getConnection("postgres","lterm54201");
+//        connection = basepool.getConnection("postgres","lterm54201");
+        connection = basepool.getConnection();
         //connection = DriverManager.getConnection(login, URL, password);
         try{
             if (connection == null) throw new SQLException();
@@ -125,7 +127,7 @@ public class DataBaseHandler {
      * @param sqlStatement запрос, который мы хотим закрыть
      */
     public void closePreparedStatement(PreparedStatement sqlStatement) throws SQLException {
-        connection = basepool.getConnection("postgres","lterm54201");
+        connection = basepool.getConnection();
         if (sqlStatement == null) return;
         try{
             sqlStatement.close();
@@ -139,7 +141,7 @@ public class DataBaseHandler {
      * Класс для отключения соединения с базой данных
      */
     public void closeConnection() throws SQLException {
-        connection = basepool.getConnection("postgres","lterm54201");
+        connection = basepool.getConnection();
         if (connection == null) return;
         try{
             connection.close();
@@ -153,7 +155,7 @@ public class DataBaseHandler {
     }
     //Устанавливаем режим транзакции базы данных
     public void setCommitMode() throws SQLException {
-        connection = basepool.getConnection("postgres","lterm54201");
+        connection = basepool.getConnection();
         try {
             if (connection==null) throw new SQLException();
             connection.setAutoCommit(false);
@@ -163,7 +165,7 @@ public class DataBaseHandler {
     }
     // Установка норального режима базы данных
     public void setNormalMode() throws SQLException {
-        connection = basepool.getConnection("postgres","lterm54201");
+        connection = basepool.getConnection();
         try {
             if (connection==null) throw new SQLException();
             connection.setAutoCommit(true);
@@ -184,7 +186,7 @@ public class DataBaseHandler {
 
     // Хочется вернуть в исходное состояние
     public void rollback() throws SQLException{
-        connection = basepool.getConnection("postgres","lterm54201");
+        connection = basepool.getConnection();
         try {
             if (connection == null) throw new SQLException();
             connection.rollback();
@@ -192,13 +194,15 @@ public class DataBaseHandler {
             System.err.println("Не удалось вернуть базу данных в исходное состояние");
         }
     }
+
     public void saveSQL() throws SQLException{
-        connection = basepool.getConnection("postgres","lterm54201");
+        connection = basepool.getConnection(); //TODO все еще падает
         try{
             if (connection == null) throw new SQLException();
             connection.setSavepoint();
         }catch (SQLException e){
             System.err.println("Не удалось сохранить базу данных в данном состоянии.");
+            e.printStackTrace();
         }
     }
 

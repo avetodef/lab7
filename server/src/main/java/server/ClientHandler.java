@@ -35,7 +35,7 @@ public class ClientHandler implements Runnable {
 
     public Request request;
     public User user;
-    private Save save;
+    private Save save = new Save();
 
     public ClientHandler(Socket clientSocket) {
         this.clientSocket = clientSocket;
