@@ -45,12 +45,12 @@ e.printStackTrace();
         }
         catch (SQLException throwables) {
             //throwables.printStackTrace();
-            response.msg(throwables.getMessage()).status(Status.UNKNOWN_ERROR);
+            response.msg(throwables.getMessage() + " add").status(Status.UNKNOWN_ERROR);
         throwables.printStackTrace();
         }
 
         catch (DataBaseException e) {
-            response.msg(e.getMessage()).status(Status.UNKNOWN_ERROR);
+            response.msg(e.getMessage() + "add").status(Status.UNKNOWN_ERROR);
             e.printStackTrace();
         }
         //response.msg("я дебил даже не зашел в цикл").status(Status.SERVER_ERROR);

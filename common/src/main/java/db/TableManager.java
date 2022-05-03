@@ -91,9 +91,7 @@ public class TableManager {
             for (int i = 0; i < lines.size(); i++) {
                 String line = lines.get(i);
                 List<String> lineSplit = Arrays.asList(line.split(","));
-                if (i == 0)
-                    dao.creationDate = Date.valueOf(lineSplit.get(0));
-
+                if (i == 0) System.out.println(" ");
                 else {
                     RouteInfo info = new RouteInfo(lineSplit);
                     dao.create(new Route(info));
@@ -101,6 +99,7 @@ public class TableManager {
             }
         } catch (RuntimeException e) {
             System.out.println(e.getMessage() + " table manager");
+            e.printStackTrace();
             return new DataBaseDAO(new DataBaseHandler(), new DataBaseUsersDolboeb());
         }
         return dao;

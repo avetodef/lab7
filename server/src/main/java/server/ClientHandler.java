@@ -43,7 +43,6 @@ public class ClientHandler implements Runnable {
 
     @Override
     public void run() {
-
         IdGenerator.reloadId(dao);
 
         InputStream socketInputStream;

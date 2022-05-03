@@ -113,7 +113,7 @@ public class ClientApp implements Runnable {
                         o.printRed("Введённой вами команды не существует. Попробуйте ввести другую команду.");
                         continue;
                     } catch (EmptyInputException e) {
-                        o.printRed(e.getMessage());
+                        o.printRed(e.getMessage() + "client app");
                         continue;
                     } catch (IndexOutOfBoundsException e) {
                         o.printRed("брат забыл айди ввести походу");

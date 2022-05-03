@@ -44,11 +44,11 @@ public class AddIfMin extends ACommands{
             }
             catch (SQLException throwables) {
                 //throwables.printStackTrace();
-                response.msg(throwables.getMessage()).status(Status.UNKNOWN_ERROR);
+                response.msg(throwables.getMessage() + "addifmin").status(Status.UNKNOWN_ERROR);
             }
 
             catch (DataBaseException e) {
-                response.msg(e.getMessage()).status(Status.UNKNOWN_ERROR);
+                response.msg(e.getMessage() + " addifmin").status(Status.UNKNOWN_ERROR);
             }
         }
         else{
