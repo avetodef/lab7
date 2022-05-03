@@ -17,7 +17,7 @@ public class RemoveById extends ACommands {
         isIdAsker = true;
     }
     public Response execute(DataBaseDAO dao) {
-        if (dao.getAll().size() == 0) {
+        if (dao.getAll() == null) {
             response.setMsg("коллекция пустая. нечего удалять");
             response.setStatus(Status.COLLECTION_ERROR);
         } else {

@@ -13,8 +13,14 @@ public class Info extends ACommands {
 
     public Response execute(DataBaseDAO dao) {
 //TODO по другому написать команду инфо
-        response.msg(dao.toString()).status(Status.OK);
-
+        try {
+            response.msg("Route {" +
+                    "size: " + dao.getAll().size() + "type: ArrayDequeue }").status(Status.OK);
+        }
+        catch (NullPointerException e){
+            response.msg("Route {" +
+                    "size: 0" + "type: ArrayDequeue }").status(Status.OK);
+        }
         return response;
     }
 }

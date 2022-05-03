@@ -15,7 +15,7 @@ import java.sql.SQLException;
 public class RemoveFirst extends ACommands{
 
     public Response execute(DataBaseDAO dao) {
-        if (dao.getAll().size() == 0)
+        if (dao.getAll() == null)
             response.status(Status.COLLECTION_ERROR).msg("коллекция пустая. нечего удалять");
             else {
             try {

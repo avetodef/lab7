@@ -23,7 +23,7 @@ public class PrintDescendingDistance extends ACommands {
                 .forEach(r->builder.append(r.getDistance()).append(" "));
 
 
-        if (dao.getAll().size() == 0)
+        if (dao.getAll() == null)
 
             response.msg("пусто").status(Status.COLLECTION_ERROR);
 

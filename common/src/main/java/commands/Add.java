@@ -28,7 +28,7 @@ public class Add extends ACommands{
                     info.fromY, info.nameFrom, info.toX, info.toY, info.nameTo,
                     info.distance);
 
-            dao.insertRoute(route, user);
+            dao.insertRoute(route, user); //TODO здесь падает
 
             response.msg("элемент добавлен в коллекцию").status(Status.OK);
         }
@@ -36,20 +36,22 @@ public class Add extends ACommands{
 
         catch (NullPointerException e){
             response.msg("ошибка..." + e.getMessage()).status(Status.COLLECTION_ERROR);
-            e.printStackTrace();
+            //e.printStackTrace();
         }
 
         catch (RuntimeException e) {
             response.msg("невозможно добавить элемент в коллекцию" + e.getMessage()).status(Status.COLLECTION_ERROR);
-
+e.printStackTrace();
         }
         catch (SQLException throwables) {
             //throwables.printStackTrace();
             response.msg(throwables.getMessage()).status(Status.UNKNOWN_ERROR);
+        throwables.printStackTrace();
         }
 
         catch (DataBaseException e) {
             response.msg(e.getMessage()).status(Status.UNKNOWN_ERROR);
+            e.printStackTrace();
         }
         //response.msg("я дебил даже не зашел в цикл").status(Status.SERVER_ERROR);
         //:(

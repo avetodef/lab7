@@ -12,7 +12,7 @@ import interaction.Status;
 public class Head extends ACommands{
 
     public Response execute(DataBaseDAO dao) {
-        if (dao.getAll().size() == 0) {
+        if (dao.getAll() == null) {
 
             response.msg("пусто...").status(Status.COLLECTION_ERROR);
         } else {

@@ -20,7 +20,7 @@ public class PrintAscendingDistance extends ACommands{
                 .forEach(r->builder.append(r.getDistance()).append(" "));
 
 
-        if (dao.getAll().size() == 0)
+        if (dao.getAll() == null)
             response.status(Status.COLLECTION_ERROR).msg("коллекция пустая. нечего выводить");
         else
             response.msg("значения поля distance всех элементов в порядке возрастания: " + builder).status(Status.OK);

@@ -25,7 +25,7 @@ public class UpdateById extends ACommands {
     public Response execute(DataBaseDAO dao) {
 
         int idFromConsole = Integer.parseInt(args.get(1));
-        if (dao.getAll().size() == 0)
+        if (dao.getAll() == null)
             response.msg("пусто. нечего обновлять").status(Status.COLLECTION_ERROR);
 
         else {

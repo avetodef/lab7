@@ -5,10 +5,13 @@ import java.io.OutputStream;
 import java.sql.*;
 import java.util.logging.LogManager;
 //import org.apache.logging;
+import java.sql.*;
+import java.util.Properties;
 
 /**
  * Класс обработки базы данных
  */
+
 
 public class DataBaseHandler {
 
@@ -51,6 +54,8 @@ public class DataBaseHandler {
         basepool.setLogin("postgres");
         basepool.setPassword(getPassDEBUG());
     }*/
+
+
     private final String JDBC_DRIVER = "org.postgresql.Driver";
 
     private String login = "postgres";
@@ -185,4 +190,26 @@ public class DataBaseHandler {
     }
 
 
-}
+    /*public Properties build() throws SQLException {
+        Connection conn = DriverManager.getConnection(URL, login, password);
+        Statement  stmt = conn.createStatement();
+        PreparedStatement preparedStatement = null;
+        PreparedStatement statement = new PreparedStatement.Builder()
+                .tableName("route")
+                .fields("name", "coordinates_id", "creation_date", "age", "color", "type", "character", "cave_id", "creator_name")
+                .valuesSetter(s -> {
+                    s.setString(1, element.getName());
+                    s.setInt(2, coordId);
+                    s.setDate(3, Date.valueOf(element.getCreationDate()));
+                    s.setLong(4, element.getAge());
+
+                    s.setString(5, element.getColor() == null ? null : element.getColor().getDescription());
+
+                    s.setString(6, element.getType().getDescription());
+
+                    s.setString(7, element.getCharacter() == null ? null : element.getCharacter().getDescription());
+
+                    s.setInt(8, caveId);
+                    s.setString(9, element.getCreatorName());
+                }).build()*/
+    }
