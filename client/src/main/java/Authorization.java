@@ -39,7 +39,7 @@ public class Authorization {
                         return newUser(dao, sc);
                     }
                     case ("N"): {
-                        while(!isAuth) {
+                        while (!isAuth) {
                             o.printNormal("помнишь свой id? {y/n}");
                             String s = sc.nextLine();
                             switch (s) {
@@ -114,8 +114,7 @@ public class Authorization {
                 if (dao.checkID(id)) {
                     try {
                         return new User(dao.getusername(id), dao.getPassword(id), id);
-                    }
-                    catch (RuntimeException e){
+                    } catch (RuntimeException e) {
                         e.printStackTrace();
                     }
                 }

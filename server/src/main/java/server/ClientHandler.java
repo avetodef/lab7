@@ -1,5 +1,6 @@
 package server;
 
+import commands.AutoUpdate;
 import console.ConsoleOutputer;
 import dao.DataBaseDAO;
 import dao.RouteDAO;
@@ -10,6 +11,7 @@ import utils.IdGenerator;
 import java.io.*;
 import java.net.Socket;
 import java.util.NoSuchElementException;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ForkJoinPool;
@@ -21,11 +23,24 @@ public class ClientHandler implements Runnable {
     private final Socket clientSocket;
     private final ConsoleOutputer output = new ConsoleOutputer();
     private DataBaseDAO dbDAO = new DataBaseDAO();
-    private final RouteDAO dao = dbDAO.getDAO();
+
 
     private final ForkJoinPool forkJoinPool = ForkJoinPool.commonPool();
     private final ExecutorService fixedThreadPool = Executors.newFixedThreadPool(3);
     private final Lock locker = new ReentrantLock();
+
+    private RouteDAO dao = dbDAO.getDAO();
+
+    {
+        try {
+            dao = fixedThreadPool.submit(new AutoUpdate()).get();
+            Thread.sleep(60_000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+    }
 
     public ClientHandler(Socket clientSocket) {
         this.clientSocket = clientSocket;
