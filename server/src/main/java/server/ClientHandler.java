@@ -1,9 +1,8 @@
 package server;
 
-import commands.Save;
 import console.ConsoleOutputer;
+import dao.DataBaseDAO;
 import dao.RouteDAO;
-import file.FileManager;
 import interaction.Response;
 import interaction.Status;
 import utils.IdGenerator;
@@ -21,8 +20,8 @@ public class ClientHandler implements Runnable {
 
     private final Socket clientSocket;
     private final ConsoleOutputer output = new ConsoleOutputer();
-    private final FileManager manager = new FileManager();
-    private final RouteDAO dao = manager.read();
+    private DataBaseDAO dbDAO = new DataBaseDAO();
+    private final RouteDAO dao = dbDAO.getDAO();
 
     private final ForkJoinPool forkJoinPool = ForkJoinPool.commonPool();
     private final ExecutorService fixedThreadPool = Executors.newFixedThreadPool(3);
@@ -59,14 +58,14 @@ public class ClientHandler implements Runnable {
                     locker.unlock();
 
                     locker.lock();
-                    Response serverResponse = this.forkJoinPool.invoke(new RequestProcessor(clientMessage, dao));
+                    Response serverResponse = this.forkJoinPool.invoke(new RequestProcessor(clientMessage, dao, dbDAO));
                     locker.unlock();
 
                     locker.lock();
                     this.fixedThreadPool.execute(new ResponseSender(clientSocket, socketOutputStream, dataOutputStream, serverResponse));
                     locker.unlock();
 
-                    Save.execute(dao);
+                    //Save.execute(dao);
 
                 } catch (NullPointerException e) {
                     errorResponse.setMsg("Введённой вами команды не существует. Попробуйте ввести другую команду.");

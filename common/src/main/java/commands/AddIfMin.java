@@ -2,6 +2,7 @@ package commands;
 
 
 import console.Console;
+import dao.DataBaseDAO;
 import dao.RouteDAO;
 import interaction.Response;
 import interaction.Status;
@@ -18,7 +19,7 @@ import java.util.Optional;
 public class AddIfMin extends ACommands{
     Console console = new Console();
 
-    public Response execute(RouteDAO routeDAO) {
+    public Response execute(RouteDAO routeDAO, DataBaseDAO dbDAO) {
         Optional<Route> minRoute = routeDAO.getAll().stream().min(Comparator.comparingInt(Route::getDistance));
 
         Integer minDistance = minRoute.map(Route::getDistance).orElse(Integer.MAX_VALUE);
@@ -29,8 +30,9 @@ public class AddIfMin extends ACommands{
                 if (info.distance < minDistance) {
                     Route route = new Route(info.name, info.x, info.y, info.fromX,
                             info.fromY, info.nameFrom, info.toX, info.toY, info.nameTo,
-                            info.distance);
+                            info.distance, user);
                     routeDAO.create(route);
+                    dbDAO.create(route);
                 } else {
                     response.msg("у нового элемента поле distance больше чем у минимального. вызовите команду заново с валидным полем distance")
                             .status(Status.USER_EBLAN_ERROR);

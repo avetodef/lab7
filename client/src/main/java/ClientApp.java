@@ -2,6 +2,7 @@ import commands.VideoRzhaka;
 import console.ConsoleOutputer;
 import console.ConsoleReader;
 import console.Console;
+import dao.DataBaseDAO;
 import exceptions.EmptyInputException;
 import exceptions.ExitException;
 import interaction.Request;
@@ -27,7 +28,7 @@ public class ClientApp implements Runnable {
     private final Console console = new Console();
     private final ReaderSender readerSender = new ReaderSender();
     private User user;
-    private final Authorization auth = new Authorization();
+    private final Authorization auth = new Authorization(sc, new DataBaseDAO());
 
     protected void mainClientLoop() {
         try {
@@ -41,6 +42,7 @@ public class ClientApp implements Runnable {
             if (!Authorization.isAuth) {
                 user = auth.askIfAuth(sc);
             } else {
+                System.out.println("client handler " + user);
                 go(selector, socketChannel, user);
             }
 

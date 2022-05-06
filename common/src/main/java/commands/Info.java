@@ -1,6 +1,7 @@
 package commands;
 
 
+import dao.DataBaseDAO;
 import dao.RouteDAO;
 import interaction.Response;
 import interaction.Status;
@@ -10,7 +11,7 @@ import interaction.Status;
  */
 public class Info extends ACommands {
 
-    public Response execute(RouteDAO routeDAO) {
+    public Response execute(RouteDAO routeDAO, DataBaseDAO dbDAO) {
 
         response.msg(routeDAO.toString()).status(Status.OK);
 

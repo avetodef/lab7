@@ -2,9 +2,11 @@ package commands;
 
 
 
+import dao.DataBaseDAO;
 import dao.RouteDAO;
 import interaction.Request;
 import interaction.Response;
+import interaction.User;
 import utils.RouteInfo;
 
 import java.util.List;
@@ -17,7 +19,7 @@ public abstract class ACommands {
         this.args = args;
     }
 
-    public abstract Response execute(RouteDAO routeDAO);
+    public abstract Response execute(RouteDAO routeDAO, DataBaseDAO dbDAO);
 
     protected boolean isAsker;
     protected boolean isIdAsker;
@@ -43,5 +45,9 @@ public abstract class ACommands {
 
     public Response response = new Response();
 
+    protected User user;
 
+    public void setUser(User user) {
+        this.user = user;
+    }
 }

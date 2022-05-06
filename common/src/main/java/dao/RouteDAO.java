@@ -26,18 +26,18 @@ public class RouteDAO implements DAO {
      * @param routeInfo - характеристики, свойственные элементы коллекции
      */
 
-    public boolean update(int id, RouteInfo routeInfo) {
-        for (Route route : collection) {
-            if (route.getId() == id) {
-                route.update(routeInfo);
+    public boolean update(int id, RouteInfo routeInfo, Route route) {
+        for (Route r : collection) {
+            if (r.getId() == id) {
+                r.update(routeInfo);
                 return true;
             }
         }
         return false;
     }
 
-    public boolean delete(int id) {
-        return collection.removeIf(route -> route.getId() == id);
+    public boolean delete(int id, Route route) {
+        return collection.removeIf(r -> r.getId() == id);
     }
 
     public Route get(int id) {

@@ -1,6 +1,7 @@
 package commands;
 
 
+import dao.DataBaseDAO;
 import dao.RouteDAO;
 import exceptions.EmptyInputException;
 import file.FileManager;
@@ -27,7 +28,7 @@ public class ExecuteScript extends ACommands {
     public ExecuteScript() {
     }
 
-    public Response execute(RouteDAO routeDAO) {
+    public Response execute(RouteDAO routeDAO, DataBaseDAO dbDAO) {
 
         String nameOfScript = args.get(1); //ok
 
@@ -50,7 +51,7 @@ public class ExecuteScript extends ACommands {
 
                     try {
                         commands = CommandSaver.getCommand(args);
-                        commands.execute(dao);
+                        commands.execute(dao, dbDAO);
 
                         response = commands.response;
                     } catch (RuntimeException e) {

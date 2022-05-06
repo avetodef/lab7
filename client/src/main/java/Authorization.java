@@ -1,7 +1,10 @@
 import console.ConsoleOutputer;
+import dao.DataBaseDAO;
 import exceptions.ExitException;
 import interaction.User;
+import utils.IdGenerator;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -14,6 +17,13 @@ public class Authorization {
     private int id;
     private String newUsername;
     private String newPassword;
+    private Scanner sc;
+    private DataBaseDAO dao;
+
+    public Authorization(Scanner sc, DataBaseDAO dao) {
+        this.sc = sc;
+        this.dao = dao;
+    }
 
     protected User askIfAuth(Scanner sc) {
 
@@ -26,51 +36,28 @@ public class Authorization {
                 switch (answ) {
 
                     case ("Y"): {
-                        o.printNormal("придумай юзернейм");
-                        String username = sc.nextLine();
-                        o.printNormal("теперь пароль");
-                        String password = sc.nextLine();
-                        id = 398; //TODO генерацию айди
-                        o.printNormal("тебе назначен id: " + id);
-                        //TODO тут проверку вместе с БД есть ли такой юзер в БД
-                        isAuth = true;
-                        o.printPurple("Для того чтобы начать введите команду. Чтобы увидеть список доступных команд введите help");
-//TODO надо настроить генерацию айди через sql как-то
-                        return new User(username, PasswordHandler.encode(password), id);
+                        return newUser(dao, sc);
                     }
                     case ("N"): {
-                        o.printNormal("помнишь свой id? {y/n}");
-                        String s = sc.nextLine();
+                        while(!isAuth) {
+                            o.printNormal("помнишь свой id? {y/n}");
+                            String s = sc.nextLine();
+                            switch (s) {
+                                case "y": {
+                                    isAuth = true;
+                                    return remembersID(dao, sc);
 
-                        switch (s) {
-
-                            case "y": {
-                                o.printNormal("введи id");
-                                while (true) {
-                                    try {
-                                        id = Integer.parseInt(sc.nextLine()); //TODO настроить проверку айдишников пользователей
-                                        break;
-                                    } catch (RuntimeException e) {
-                                        o.printRed("и че это за тип данных такой");
-
-                                    }
                                 }
-                                newUsername = "user_default"; //TODO тут наверное поиск по таблице юзеров надо сделать
-                                newPassword = "user_default";
-                                break;
+                                case "n": {
+                                    isAuth = true;
+                                    return dosentRemember(dao, sc);
+                                }
+                                default:
+                                    isAuth = false;
+                                    o.printRed("и че это значит");
                             }
-                            case "n": {
-                                o.printNormal("введи юзернейм");
-                                newUsername = sc.nextLine();
-                                o.printNormal("теперь пароль");
-                                newPassword = sc.nextLine();
-                                id = 421; //TODO присвоение пароля через скл
-                                break;
-                            }
-                            default:
-                                o.printRed("и че это значит");
-                        }
 
+                        }
                         //TODO опять же проверки по типу есть ли такой юзернейм или пароль в БД
                         isAuth = true;
                         o.printPurple("Для того чтобы начать введите команду. Чтобы увидеть список доступных команд введите help");
@@ -99,23 +86,67 @@ public class Authorization {
         }
     }
 
-    private int userIdGenerator() {
-        //TODO написать по нормальному эту генерацию айдишников
-        //может быть ее надо написать в датабейс манаждере а не тут и потом вызывать его как то
+    private User newUser(DataBaseDAO dao, Scanner sc) {
+        while (true) {
+            o.printNormal("придумай юзернейм");
+            String username = sc.nextLine();
+            if (!dao.checkUsername(username)) {
+                o.printNormal("теперь пароль");
+                String password = sc.nextLine();
+                isAuth = true;
+                dao.insertUser(new User(username, PasswordHandler.encode(password), id));
 
-//        try {
-//            int id = -1;
-//            PreparedStatement prep = conn.prepareStatement("INSERT INTO TABLE (USER_ID) VALUES(?)", Statement.RETURN_GENERATED_KEYS);
-//            prep.setString(1, "user_id");
-//            prep.executeUpdate();
-//            ResultSet rs = prep.getGeneratedKeys();
-//            if (rs.next()) {
-//                id = rs.getInt(1);
-//            }
-//        } catch (SQLException e) {
-//            System.out.println("problems occured while generating a new id: " + e.getMessage());
-//        }
-        return id;
+                //o.printNormal("тебе назначен id: " + dao.getUserID(username));
+                o.printPurple("Для того чтобы начать введите команду. Чтобы увидеть список доступных команд введите help");
+
+                return new User(username, PasswordHandler.encode(password), dao.getUserID(username));
+            } else {
+                System.out.println("такой юзернейм уже есть");
+            }
+        }
     }
 
+    private User remembersID(DataBaseDAO dao, Scanner sc) {
+        o.printNormal("введи id");
+        while (true) {
+            try {
+                id = Integer.parseInt(sc.nextLine());
+                if (dao.checkID(id)) {
+                    try {
+                        return new User(dao.getusername(id), dao.getPassword(id), id);
+                    }
+                    catch (RuntimeException e){
+                        e.printStackTrace();
+                    }
+                }
+                break;
+            } catch (RuntimeException e) {
+                o.printRed("и че это за тип данных такой");
+                e.printStackTrace();
+                continue;
+
+            }
+        }
+        return null;
+    }
+
+    private User dosentRemember(DataBaseDAO dao, Scanner sc) {
+        while (true) {
+            o.printNormal("введи юзернейм");
+            newUsername = sc.nextLine();
+            if (dao.checkUsername(newUsername)) {
+                o.printNormal("теперь пароль");
+                newPassword = sc.nextLine();
+                if (!dao.checkPassword(PasswordHandler.encode(newPassword))) {
+                    System.out.println("что то у тебя не соотносятся пароль и юзернейм. вспомниай");
+
+                } else {
+                    id = dao.getUserID(newUsername);
+                    return new User(newUsername, newPassword, id);
+                }
+            } else {
+                o.printRed("нет такого юзернейма");
+            }
+        }
+    }
 }

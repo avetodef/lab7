@@ -1,6 +1,7 @@
 package commands;
 
 
+import dao.DataBaseDAO;
 import dao.RouteDAO;
 import interaction.Response;
 import interaction.Status;
@@ -18,7 +19,7 @@ public class UpdateById extends ACommands {
     }
 
 
-    public Response execute(RouteDAO routeDAO) {
+    public Response execute(RouteDAO routeDAO, DataBaseDAO dbDAO) {
 
         int idFromConsole = Integer.parseInt(args.get(1));
         if (routeDAO.getAll().size() == 0)
@@ -31,7 +32,9 @@ public class UpdateById extends ACommands {
 
             else {
                 try {
-                    routeDAO.update(idFromConsole, info);
+                    routeDAO.update(idFromConsole, info, routeDAO.get(idFromConsole));
+                    dbDAO.update(idFromConsole, info, routeDAO.get(idFromConsole));
+
                 } catch (IndexOutOfBoundsException e) {
                     response.msg("брат забыл айди ввести походу").status(Status.USER_EBLAN_ERROR);
                 } catch (NumberFormatException e) {

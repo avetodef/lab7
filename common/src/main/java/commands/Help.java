@@ -1,6 +1,7 @@
 package commands;
 
 
+import dao.DataBaseDAO;
 import dao.RouteDAO;
 import interaction.Response;
 import interaction.Status;
@@ -9,8 +10,7 @@ import interaction.Status;
  * Класс команды HELP, предназначенной для выведения списка команд и их возможностей
  */
 public class Help extends ACommands {
-
-    public Response execute(RouteDAO routeDAO) {
+    public Response execute(RouteDAO routeDAO, DataBaseDAO dbDAO) {
 
        response.msg("help : вывести справку по доступным командам " +
                        System.lineSeparator() +

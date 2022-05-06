@@ -1,6 +1,7 @@
 package commands;
 
 
+import dao.DataBaseDAO;
 import dao.RouteDAO;
 import interaction.Response;
 import interaction.Status;
@@ -14,7 +15,7 @@ import java.util.Comparator;
 public class PrintDescendingDistance extends ACommands {
 
 
-    public Response execute(RouteDAO routeDAO) {
+    public Response execute(RouteDAO routeDAO, DataBaseDAO dbDAO) {
 
         StringBuilder builder = new StringBuilder();
         routeDAO.getAll().stream()

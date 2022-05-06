@@ -1,6 +1,7 @@
 package commands;
 
 
+import dao.DataBaseDAO;
 import dao.RouteDAO;
 import exceptions.ExitException;
 import interaction.Response;
@@ -17,15 +18,16 @@ public class Add extends ACommands{
     {
         isAsker = true;
     }
-    public Response execute(RouteDAO routeDAO) {
+    public Response execute(RouteDAO routeDAO, DataBaseDAO dbDAO) {
 
         try {
 
             Route route = new Route(info.name, info.x, info.y, info.fromX,
                     info.fromY, info.nameFrom, info.toX, info.toY, info.nameTo,
-                    info.distance);
-
+                    info.distance, user);
+            route.setUser(user);
             routeDAO.create(route);
+            dbDAO.create(route);
 
             response.msg("элемент добавлен в коллекцию").status(Status.OK);
         }

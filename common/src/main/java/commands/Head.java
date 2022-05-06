@@ -1,6 +1,7 @@
 package commands;
 
 
+import dao.DataBaseDAO;
 import dao.RouteDAO;
 import interaction.Response;
 import interaction.Status;
@@ -10,12 +11,10 @@ import interaction.Status;
  */
 public class Head extends ACommands{
 
-    public Response execute(RouteDAO routeDAO) {
+    public Response execute(RouteDAO routeDAO, DataBaseDAO dbDAO) {
         if (routeDAO.getAll().size() == 0) {
-
             response.msg("пусто...").status(Status.COLLECTION_ERROR);
         } else {
-
             response.msg(routeDAO.printFirst()).status(Status.OK);
         }
 

@@ -3,6 +3,8 @@ package utils;
 
 
 
+import interaction.User;
+
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -17,7 +19,7 @@ public class Route {
     private Location from; //Поле не может быть null
     private utils.loc.Location to; //Поле может быть null
     private Integer distance; //Поле не может быть null, Значение поля должно быть больше 1
-
+    private User user;
 //    public static void builder() {
 //    }
 
@@ -26,7 +28,7 @@ public class Route {
                     + from.getName() + "," + to.getToX() + "," + to.getToY() + "," + to.getName() + "," + distance;
     }
 
-    public Route(String name, double coordinatesX, Double coordinatesY, double fromX, Long fromY, String nameFrom, int toX, float toY, String nameTo, Integer distance ){
+    public Route(String name, double coordinatesX, Double coordinatesY, double fromX, Long fromY, String nameFrom, int toX, float toY, String nameTo, Integer distance, User user ){
         this.id = IdGenerator.nextId();
         this.name = name;
         this.coordinates = new Coordinates(coordinatesX, coordinatesY);
@@ -34,6 +36,15 @@ public class Route {
         this.to = new utils.loc.Location(toX, toY, nameTo);
         this.distance = distance;
         this.creationDate = ZonedDateTime.now();
+        this.user = user;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Route(RouteInfo information) {
@@ -80,8 +91,8 @@ public class Route {
         return coordinates;
     }
 
-    public ZonedDateTime getCreationDate() {
-        return creationDate;
+    public String getCreationDate() {
+        return creationDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
     public Location getFrom() {

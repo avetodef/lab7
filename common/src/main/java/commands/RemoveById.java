@@ -1,6 +1,7 @@
 package commands;
 
 
+import dao.DataBaseDAO;
 import dao.RouteDAO;
 import interaction.Response;
 import interaction.Status;
@@ -14,18 +15,19 @@ public class RemoveById extends ACommands {
     {
         isIdAsker = true;
     }
-    public Response execute(RouteDAO routeDAO) {
+    public Response execute(RouteDAO routeDAO, DataBaseDAO dbDAO) {
         if (routeDAO.getAll().size() == 0) {
             response.setMsg("коллекция пустая. нечего удалять");
             response.setStatus(Status.COLLECTION_ERROR);
         } else {
             try {
                 int id = Integer.parseInt(args.get(1));
-                if (!routeDAO.delete(id))
+                if (!routeDAO.delete(id, routeDAO.get(id)) && !dbDAO.delete(id, routeDAO.get(id)) )
                     response.msg("нет элемента с таким id. введите команду заново с правильным id" ).
                             status(Status.USER_EBLAN_ERROR);
-                 else
-                     response.msg("ура удалилось").status(Status.OK);
+                 else {
+                    response.msg("ура удалилось").status(Status.OK);
+                }
 
             }
             catch (IndexOutOfBoundsException e){

@@ -1,6 +1,7 @@
 package commands;
 
 
+import dao.DataBaseDAO;
 import dao.RouteDAO;
 import interaction.Response;
 import interaction.Status;
@@ -15,7 +16,7 @@ public class PrintUniqueDistance extends ACommands{
 
     static Set<Integer> distanceSet = new HashSet<>();
 
-    public Response execute(RouteDAO routeDAO) {
+    public Response execute(RouteDAO routeDAO, DataBaseDAO dbDAO) {
         if (routeDAO.getAll().size() == 0)
             response.msg("пусто").status(Status.COLLECTION_ERROR);
          else {
