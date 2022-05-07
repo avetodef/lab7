@@ -18,6 +18,8 @@ public class RouteInfo {
     public String nameTo;
     public Integer distance;
 
+
+
     public RouteInfo(List<String> data) {
         id = Integer.parseInt(data.get(0));
         name = data.get(1);
