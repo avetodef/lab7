@@ -51,30 +51,46 @@ public class DataBaseDAO implements DAO {
     @Override
     public int create(Route route) {
         Connection connection = connect();
-        String statement = "INSERT INTO collection(name, coord_x, coord_y, creationdate, from_x, from_y, from_name, to_x, to_y, to_name , distance, username)"
-                + "VALUES(?,?,?,?,?,?,?,?,?,?,?,?) returning id";
+        String statement1 = "INSERT INTO route(creationdate, distance, username, name )"
+                + "VALUES(?,?,?,?) returning id";
 //        String statement = "INSERT INTO collection(name, coord_x, coord_y, creationdate, from_x, from_y, from_name, to_x, to_y, to_name , distance)"
 //                + "VALUES(?,?,?,?,?,?,?,?,?,?,?)";
 
+        String statement2 = "INSERT INTO coordinates(coord_x,coord_y)" + "VALUES (?,?) returning id";
+        String statement3 = "INSERT INTO location_from(from_x,from_y,from_name)" + "VALUES (?,?,?) returning id";
+        String statement4 = "INSERT INTO location_to(to_x,to_y,to_name)" + "VALUES(?,?,?) returning id";
+
         try {
-            PreparedStatement pstmt = connection.prepareStatement(statement);
+            PreparedStatement pstmt1 = connection.prepareStatement(statement1);
+            pstmt1.setTimestamp(1, Timestamp.valueOf(route.getCreationDate()));
+            pstmt1.setInt(2, route.getDistance());
+            pstmt1.setString(3, route.getUser().getUsername());
+            pstmt1.setString(4, route.getName());
+            ResultSet rs1 = pstmt1.executeQuery();
+            rs1.next();
 
-            pstmt.setString(1, route.getName());
-            pstmt.setDouble(2, route.getCoordinates().getCoorX());
-            pstmt.setDouble(3, route.getCoordinates().getCoorY());
-            pstmt.setTimestamp(4, Timestamp.valueOf(route.getCreationDate()));
-            pstmt.setDouble(5, route.getFrom().getFromX());
-            pstmt.setLong(6, route.getFrom().getFromY());
-            pstmt.setString(7, route.getFrom().getName());
-            pstmt.setInt(8, route.getTo().getToX());
-            pstmt.setFloat(9, route.getTo().getToY());
-            pstmt.setString(10, route.getTo().getName());
-            pstmt.setInt(11, route.getDistance());
-            pstmt.setString(12, route.getUser().getUsername());
-            ResultSet rs = pstmt.executeQuery();
-            rs.next();
+            PreparedStatement pstmt2 = connection.prepareStatement(statement2);
+            pstmt2.setDouble(1, route.getCoordinates().getCoorX());
+            pstmt2.setDouble(2, route.getCoordinates().getCoorY());
+            ResultSet rs2 = pstmt2.executeQuery();
+            rs2.next();
 
-            return rs.getInt("id");
+            PreparedStatement pstmt3 = connection.prepareStatement(statement3);
+            pstmt3.setDouble(1, route.getFrom().getFromX());
+            pstmt3.setLong(2, route.getFrom().getFromY());
+            pstmt3.setString(3, route.getFrom().getName());
+            ResultSet rs3 = pstmt3.executeQuery();
+            rs3.next();
+
+            PreparedStatement pstmt4 = connection.prepareStatement(statement4);
+            pstmt4.setInt(1, route.getTo().getToX());
+            pstmt4.setFloat(2, route.getTo().getToY());
+            pstmt4.setString(3, route.getTo().getName());
+            ResultSet rs4 = pstmt4.executeQuery();
+            rs4.next();
+
+
+            return rs1.getInt("id");
             //connection.commit();
 
         } catch (SQLException e) {
@@ -86,7 +102,7 @@ public class DataBaseDAO implements DAO {
     }
 
     public String getUsernameByRouteId(int routeID){
-        String SQL = "SELECT * FROM collection WHERE id=?";
+        String SQL = "SELECT * FROM route WHERE id=?";
         try {
             PreparedStatement pstmt = connection.prepareStatement(SQL);
             pstmt.setInt(1, routeID);
@@ -102,24 +118,50 @@ public class DataBaseDAO implements DAO {
     @Override
     public boolean update(int id, RouteInfo routeInfo) {
         Connection connection = connect();
-        String statement = "UPDATE collection SET name = ?, coord_x = ?, coord_y = ?, creationdate = ?, from_x = ?, from_y = ?, from_name = ?, to_x = ?, to_y = ?, to_name = ? , distance = ?" +
-                "WHERE id = ?";
-        try {
-            PreparedStatement pstmt = connection.prepareStatement(statement);
-            pstmt.setString(1, routeInfo.name);
-            pstmt.setDouble(2, routeInfo.x);
-            pstmt.setDouble(3, routeInfo.y);
-            pstmt.setTimestamp(4,Timestamp.valueOf(ZonedDateTime.now().toLocalDateTime()));
-            pstmt.setDouble(5, routeInfo.fromX);
-            pstmt.setLong(6, routeInfo.fromY);
-            pstmt.setString(7, routeInfo.nameFrom);
-            pstmt.setInt(8, routeInfo.toX);
-            pstmt.setFloat(9, routeInfo.toY);
-            pstmt.setString(10, routeInfo.nameTo);
-            pstmt.setInt(11, routeInfo.distance);
-            pstmt.setInt(12, id);
 
-            return pstmt.executeUpdate() != 0;
+
+        String statement1 = "UPDATE route SET  creationdate = ?,distance = ?, name =?"
+                + "WHERE id = ?";
+        String statement2 = "UPDATE coordinates SET coord_x = ?, coord_y = ?" + "WHERE id = ?";
+
+        String statement3="UPDATE location_from SET from_x = ?,from_y = ?, from_name = ?"
+                + "WHERE id = ?";
+        String statement4 = "UPDATE location_to SET to_x = ?, to_y = ?, to_name = ?" +
+                "WHERE id = ?";
+
+
+        try {
+            PreparedStatement pstmt1 = connection.prepareStatement(statement1);
+            pstmt1.setTimestamp(1, Timestamp.valueOf(ZonedDateTime.now().toLocalDateTime()));
+            pstmt1.setInt(2, routeInfo.distance);
+            pstmt1.setString(3, routeInfo.name);
+            pstmt1.setInt(4, id);
+
+
+            PreparedStatement pstmt2 = connection.prepareStatement(statement2);
+            pstmt2.setDouble(1, routeInfo.x);
+            pstmt2.setDouble(2, routeInfo.y);
+            pstmt2.setInt(3, id);
+
+
+            PreparedStatement pstmt3 = connection.prepareStatement(statement3);
+            pstmt3.setDouble(1, routeInfo.fromX);
+            pstmt3.setLong(2, routeInfo.fromY);
+            pstmt3.setString(3, routeInfo.nameFrom);
+            pstmt3.setInt(4, id);
+
+
+            PreparedStatement pstmt4 = connection.prepareStatement(statement4);
+            pstmt4.setInt(1, routeInfo.toX);
+            pstmt4.setFloat(2, routeInfo.toY);
+            pstmt4.setString(3, routeInfo.nameTo);
+            pstmt4.setInt(4, id);
+
+            pstmt1.executeUpdate();
+            pstmt2.executeUpdate();
+            pstmt3.executeUpdate();
+            pstmt4.executeUpdate();
+            return true;
         } catch (SQLException w) {
             w.printStackTrace();
         }
@@ -129,14 +171,29 @@ public class DataBaseDAO implements DAO {
     @Override
     public boolean delete(int id) {
         Connection connection = connect();
-        String SQL = "DELETE FROM collection WHERE id = ? ";
+        String SQL1 = "DELETE FROM route WHERE id = ? ";
+        String SQL2 = "DELETE FROM coordinates WHERE id = ?";
+        String SQL3 = "DELETE FROM location_from WHERE id =?";
+        String SQL4 = "DELETE FROM location_to WHERE id = ?";
+
 
         try {
-            PreparedStatement pstmt = connection.prepareStatement(SQL);
-            pstmt.setInt(1, id);
+            PreparedStatement pstmt1 = connection.prepareStatement(SQL1);
+            pstmt1.setInt(1, id);
 
+            PreparedStatement pstmt2 = connection.prepareStatement(SQL2);
+            pstmt2.setInt(1,id);
 
-            if (pstmt.executeUpdate() != 0) return true;
+            PreparedStatement pstmt3 = connection.prepareStatement(SQL3);
+            pstmt3.setInt(1,id);
+
+            PreparedStatement pstmt4 = connection.prepareStatement(SQL4);
+            pstmt4.setInt(1,id);
+            pstmt1.executeUpdate();
+            pstmt2.executeUpdate();
+            pstmt3.executeUpdate();
+            pstmt4.executeUpdate();
+            return true;
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -146,19 +203,36 @@ public class DataBaseDAO implements DAO {
     @Override
     public Deque<Route> getAll() {
         Connection connection = connect();
-        String SQL = "SELECT * FROM collection";
+        String SQL1 = "SELECT * FROM route";
+        String SQL2 = "SELECT * FROM coordinates ";
+        String SQL3 = "SELECT * FROM location_from ";
+        String SQL4 = "SELECT * FROM location_to ";
+
         Deque<Route> collection = new ArrayDeque<>();
         try {
-            PreparedStatement pstmt = connection.prepareStatement(SQL);
-            ResultSet rs = pstmt.executeQuery();
-            //TODO наверное не сработает
+            PreparedStatement pstmt1 = connection.prepareStatement(SQL1);
+            ResultSet rs1 = pstmt1.executeQuery();
+            rs1.next();
 
-            while(rs.next()){
-                collection.add(new Route(rs.getInt("id"), rs.getString("name"), rs.getDouble("coord_x"),
-                        rs.getDouble("coord_y"), rs.getDouble("from_x"),
-                        rs.getLong("from_y"), rs.getString("from_name"), rs.getInt("to_x"),
-                        rs.getFloat("to_y"), rs.getString("to_name"),rs.getInt("distance"),
-                        getUserByName(rs.getString("username"))));
+            PreparedStatement pstmt2 = connection.prepareStatement(SQL2);
+            ResultSet rs2 = pstmt2.executeQuery();
+            rs2.next();
+
+            PreparedStatement pstmt3 = connection.prepareStatement(SQL3);
+            ResultSet rs3 = pstmt3.executeQuery();
+            rs3.next();
+
+            PreparedStatement pstmt4 = connection.prepareStatement(SQL4);
+            ResultSet rs4 = pstmt4.executeQuery();
+            rs4.next();
+
+
+            while(rs1.next()){
+                collection.add(new Route(rs1.getInt("id"), rs1.getString("name"), rs2.getDouble("coord_x"),
+                        rs2.getDouble("coord_y"), rs3.getDouble("from_x"),
+                        rs3.getLong("from_y"), rs3.getString("from_name"), rs4.getInt("to_x"),
+                        rs4.getFloat("to_y"), rs4.getString("to_name"),rs1.getInt("distance"),
+                        getUserByName(rs1.getString("username"))));
             }
             return collection;
         } catch (SQLException ex) {
@@ -185,13 +259,29 @@ public class DataBaseDAO implements DAO {
 
     public void removeFirst(RouteDAO dao) {
         Connection connection = connect();
-        String sql = "DELETE FROM collection WHERE id = ?";
+        String sql1 = "DELETE FROM route WHERE id = ?";
+        String sql2 = "DELETE FROM coordinates WHERE id = ?";
+        String sql3 = "DELETE FROM location_from WHERE id = ?";
+        String sql4 = "DELETE FROM location_to WHERE id = ?";
         try {
-            PreparedStatement pstmt = connection.prepareStatement(sql);
+            PreparedStatement pstmt1 = connection.prepareStatement(sql1);
             int id = dao.getAll().getFirst().getId();
+            pstmt1.setInt(1, id);
+            pstmt1.execute();
 
-            pstmt.setInt(1, id);
-            pstmt.execute();
+            PreparedStatement pstmt2 = connection.prepareStatement(sql2);
+            pstmt2.setInt(1, id);
+            pstmt2.execute();
+
+            PreparedStatement pstmt3 = connection.prepareStatement(sql3);
+            pstmt3.setInt(1, id);
+            pstmt3.execute();
+
+            PreparedStatement pstmt4 = connection.prepareStatement(sql4);
+            pstmt4.setInt(1, id);
+            pstmt4.execute();
+
+
         } catch (SQLException e) {
             e.printStackTrace();
         }

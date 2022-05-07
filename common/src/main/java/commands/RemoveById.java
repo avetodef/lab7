@@ -25,7 +25,8 @@ public class RemoveById extends ACommands {
             try {
                 int id = Integer.parseInt(args.get(1));
 
-                if(Objects.equals(dbDAO.getUsernameByRouteId(id), routeDAO.get(id).getUser().getUsername())) {
+                if(Objects.equals(dbDAO.getUsernameByRouteId(id), user.getUsername())) {
+
                     if (!routeDAO.delete(id) && !dbDAO.delete(id))
                         response.msg("нет элемента с таким id. введите команду заново с правильным id").
                                 status(Status.USER_EBLAN_ERROR);
