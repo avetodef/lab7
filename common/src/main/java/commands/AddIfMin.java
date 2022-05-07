@@ -28,11 +28,13 @@ public class AddIfMin extends ACommands{
                 RouteInfo info = console.info();
 
                 if (info.distance < minDistance) {
-                    Route route = new Route(info.name, info.x, info.y, info.fromX,
+                    Route route = new Route(-1, info.name, info.x, info.y, info.fromX,
                             info.fromY, info.nameFrom, info.toX, info.toY, info.nameTo,
                             info.distance, user);
+
+                    int id = dbDAO.create(route);
+                    route.setId(id);
                     routeDAO.create(route);
-                    dbDAO.create(route);
                 } else {
                     response.msg("у нового элемента поле distance больше чем у минимального. вызовите команду заново с валидным полем distance")
                             .status(Status.USER_EBLAN_ERROR);

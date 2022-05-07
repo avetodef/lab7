@@ -15,8 +15,9 @@ public class RouteDAO implements DAO {
 
     public String initDate = ZonedDateTime.now().format(DateTimeFormatter.ofPattern("dd.MM.yyyy : HH.mm.ss"));
 
-    public void create(Route route) {
+    public int create(Route route) {
         collection.add(route);
+        return 1;
     }
 
     /**
@@ -26,7 +27,7 @@ public class RouteDAO implements DAO {
      * @param routeInfo - характеристики, свойственные элементы коллекции
      */
 
-    public boolean update(int id, RouteInfo routeInfo, Route route) {
+    public boolean update(int id, RouteInfo routeInfo) {
         for (Route r : collection) {
             if (r.getId() == id) {
                 r.update(routeInfo);
@@ -36,7 +37,7 @@ public class RouteDAO implements DAO {
         return false;
     }
 
-    public boolean delete(int id, Route route) {
+    public boolean delete(int id) {
         return collection.removeIf(r -> r.getId() == id);
     }
 
@@ -53,9 +54,9 @@ public class RouteDAO implements DAO {
         return new ArrayDeque<>(collection);
     }
 
-    public void clear() {
-        collection.clear();
-    }
+//    public void clear() {
+//        collection.clear();
+//    }
 
     public boolean removeById(int id){
         Optional<Route> route = collection.stream()

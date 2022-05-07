@@ -1,17 +1,36 @@
 package server;
 
+import dao.DataBaseDAO;
+import dao.RouteDAO;
+
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.Socket;
 import java.net.SocketException;
 import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
 
 
 public class RequestReader implements Callable<String> {
 
     private final InputStream socketInputStream;
+    private final ForkJoinPool forkJoinPool;
+    private RouteDAO routeDAO;
+    private DataBaseDAO dataBaseDAO;
+    private ExecutorService fixedThreadPool;
+    private DataOutputStream dataOutputStream;
+    private Socket clientSocket;
 
-    public RequestReader(InputStream socketInputStream) {
+    public RequestReader(InputStream socketInputStream, ForkJoinPool forkJoinPool, RouteDAO routeDAO, DataBaseDAO dataBaseDAO, ExecutorService fixedThreadPool, DataOutputStream dataOutputStream, Socket clientSocket) {
         this.socketInputStream = socketInputStream;
+        this.forkJoinPool = forkJoinPool;
+        this.routeDAO = routeDAO;
+        this.dataBaseDAO = dataBaseDAO;
+        this.fixedThreadPool = fixedThreadPool;
+        this.dataOutputStream = dataOutputStream;
+        this.clientSocket = clientSocket;
     }
 
     /**
@@ -34,21 +53,20 @@ public class RequestReader implements Callable<String> {
                 builder.append((char) byteRead);
             }
             requestJson = builder.toString();
-
-            return requestJson;
+            //System.out.println("request json " + requestJson);
+            this.forkJoinPool.invoke(new RequestProcessor(requestJson, routeDAO, dataBaseDAO, fixedThreadPool, dataOutputStream));
+            return "executed";
         }
 
         catch (SocketException e) {
             System.out.println("клиент лег поспать. жди.");
-            while (true){}
+            while(true){}
 
         } catch (IOException e) {
-            System.out.println("server razuchilsya chitat... wot pochemy: " + e.getMessage());
+            return ("server razuchilsya chitat... wot pochemy: " + e.getMessage());
 
         } catch (NullPointerException e) {
-            System.out.println("stalo pusto v dushe i v request'e: " + e.getMessage());
+           return ("stalo pusto v dushe i v request'e: " + e.getMessage());
         }
-
-        return null;
     }
 }

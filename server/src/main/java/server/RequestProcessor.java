@@ -7,18 +7,27 @@ import dao.RouteDAO;
 import interaction.Response;
 import json.JsonConverter;
 import utils.RouteInfo;
+
+import java.io.DataOutputStream;
+import java.net.Socket;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RecursiveTask;
 
-public class RequestProcessor extends RecursiveTask<Response>{
+public class RequestProcessor extends RecursiveTask<String>{
 
     private final String msg;
     private final RouteDAO dao;
     private final DataBaseDAO dataBaseDAO;
+    private ExecutorService fixedThreadPool;
+    private DataOutputStream dataOutputStream;
 
-    public RequestProcessor(String msg, RouteDAO dao, DataBaseDAO dataBaseDAO) {
+    public RequestProcessor(String msg, RouteDAO dao, DataBaseDAO dataBaseDAO, ExecutorService fixedThreadPool, DataOutputStream dataOutputStream) {
         this.msg = msg;
         this.dao = dao;
         this.dataBaseDAO = dataBaseDAO;
+        this.fixedThreadPool = fixedThreadPool;
+        this.dataOutputStream = dataOutputStream;
+
     }
 
     /**
@@ -27,14 +36,15 @@ public class RequestProcessor extends RecursiveTask<Response>{
      * @return the result of the computation
      */
     @Override
-    protected Response compute() {
+    protected String compute() {
 
         ACommands command = CommandSaver.getCommand(JsonConverter.des(msg).getArgs());
         RouteInfo info = JsonConverter.des(msg).getInfo();
         command.setInfo(info);
         command.setUser(JsonConverter.des(msg).getUser());
-
-        return command.execute(dao, dataBaseDAO);
+        //System.out.println("command " + command);
+        this.fixedThreadPool.execute(new ResponseSender(dataOutputStream, command.execute(dao, dataBaseDAO)));
+        return null;
     }
 
 

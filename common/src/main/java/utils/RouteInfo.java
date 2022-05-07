@@ -1,6 +1,7 @@
 package utils;
 
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 public class RouteInfo {
@@ -22,7 +23,7 @@ public class RouteInfo {
         name = data.get(1);
         x = Double.parseDouble(data.get(2));
         y = Double.parseDouble(data.get(3));
-        creationDate = data.get(4);
+        creationDate = ZonedDateTime.parse(data.get(4)).format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss"));
         fromX = Double.parseDouble(data.get(5));
         fromY = Long.parseLong(data.get(6));
         nameFrom = data.get(7);

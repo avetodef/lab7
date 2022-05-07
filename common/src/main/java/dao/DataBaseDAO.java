@@ -6,6 +6,7 @@ import utils.Route;
 import utils.RouteInfo;
 
 import java.sql.*;
+import java.time.ZonedDateTime;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
@@ -48,13 +49,16 @@ public class DataBaseDAO implements DAO {
     }
 
     @Override
-    public void create(Route route) {
+    public int create(Route route) {
         Connection connection = connect();
-        String statement = "INSERT INTO collection( name, coordX, coordY, creationdate, " +
-                "fromX, fromY, fromName, toX, toY, nameTo , distance, userID)"
-                + "VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
+        String statement = "INSERT INTO collection(name, coord_x, coord_y, creationdate, from_x, from_y, from_name, to_x, to_y, to_name , distance, username)"
+                + "VALUES(?,?,?,?,?,?,?,?,?,?,?,?) returning id";
+//        String statement = "INSERT INTO collection(name, coord_x, coord_y, creationdate, from_x, from_y, from_name, to_x, to_y, to_name , distance)"
+//                + "VALUES(?,?,?,?,?,?,?,?,?,?,?)";
+
         try {
             PreparedStatement pstmt = connection.prepareStatement(statement);
+
             pstmt.setString(1, route.getName());
             pstmt.setDouble(2, route.getCoordinates().getCoorX());
             pstmt.setDouble(3, route.getCoordinates().getCoorY());
@@ -66,41 +70,56 @@ public class DataBaseDAO implements DAO {
             pstmt.setFloat(9, route.getTo().getToY());
             pstmt.setString(10, route.getTo().getName());
             pstmt.setInt(11, route.getDistance());
-            pstmt.setInt(12, route.getUser().getId());
+            pstmt.setString(12, route.getUser().getUsername());
+            ResultSet rs = pstmt.executeQuery();
+            rs.next();
 
-            pstmt.executeUpdate();
-            connection.commit();
+            return rs.getInt("id");
+            //connection.commit();
 
         } catch (SQLException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
         }
+        return 0;
 
     }
 
+    public String getUsernameByRouteId(int routeID){
+        String SQL = "SELECT * FROM collection WHERE id=?";
+        try {
+            PreparedStatement pstmt = connection.prepareStatement(SQL);
+            pstmt.setInt(1, routeID);
+            ResultSet rs = pstmt.executeQuery();
+            rs.next();
+            return rs.getString("username");
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
+            return null;
+        }
+    }
+
     @Override
-    public boolean update(int id, RouteInfo routeInfo, Route route) {
+    public boolean update(int id, RouteInfo routeInfo) {
         Connection connection = connect();
-        String statement = "INSERT INTO collection( name, coordX, coordY, creationdate, " +
-                "fromX, fromY, fromName, toX, toY, nameTo , distance, userID)"
-                + "VALUES(?,?,?,?,?,?,?,?,?,?,?,?)";
+        String statement = "UPDATE collection SET name = ?, coord_x = ?, coord_y = ?, creationdate = ?, from_x = ?, from_y = ?, from_name = ?, to_x = ?, to_y = ?, to_name = ? , distance = ?" +
+                "WHERE id = ?";
         try {
             PreparedStatement pstmt = connection.prepareStatement(statement);
             pstmt.setString(1, routeInfo.name);
             pstmt.setDouble(2, routeInfo.x);
             pstmt.setDouble(3, routeInfo.y);
-            pstmt.setTimestamp(4, Timestamp.valueOf(String.valueOf(routeInfo.creationDate))); //TODO мб упадет
+            pstmt.setTimestamp(4,Timestamp.valueOf(ZonedDateTime.now().toLocalDateTime()));
             pstmt.setDouble(5, routeInfo.fromX);
             pstmt.setLong(6, routeInfo.fromY);
             pstmt.setString(7, routeInfo.nameFrom);
             pstmt.setInt(8, routeInfo.toX);
             pstmt.setFloat(9, routeInfo.toY);
             pstmt.setString(10, routeInfo.nameTo);
-            pstmt.setInt(11, route.getDistance());
+            pstmt.setInt(11, routeInfo.distance);
+            pstmt.setInt(12, id);
 
-            if (pstmt.execute())
-                return true;
-            else return false;
+            return pstmt.executeUpdate() != 0;
         } catch (SQLException w) {
             w.printStackTrace();
         }
@@ -108,14 +127,14 @@ public class DataBaseDAO implements DAO {
     }
 
     @Override
-    public boolean delete(int id, Route route) {
+    public boolean delete(int id) {
         Connection connection = connect();
-        String SQL = "DELETE FROM collection WHERE id = ? AND user = ?";
-        int userID = route.getUser().getId();
+        String SQL = "DELETE FROM collection WHERE id = ? ";
+
         try {
             PreparedStatement pstmt = connection.prepareStatement(SQL);
             pstmt.setInt(1, id);
-            pstmt.setInt(2, userID);
+
 
             if (pstmt.executeUpdate() != 0) return true;
         } catch (SQLException e) {
@@ -127,13 +146,21 @@ public class DataBaseDAO implements DAO {
     @Override
     public Deque<Route> getAll() {
         Connection connection = connect();
-        String SQL = "SELECT id, name, coordX, coordY, creationdate," +
-                "fromX, fromY, fromName, toX, toY, nameTo , distance, userID FROM collection";
+        String SQL = "SELECT * FROM collection";
+        Deque<Route> collection = new ArrayDeque<>();
         try {
-            Statement stmt = connection.createStatement();
-            ResultSet rs = stmt.executeQuery(SQL);
+            PreparedStatement pstmt = connection.prepareStatement(SQL);
+            ResultSet rs = pstmt.executeQuery();
             //TODO наверное не сработает
-            return (Deque<Route>) rs;
+
+            while(rs.next()){
+                collection.add(new Route(rs.getInt("id"), rs.getString("name"), rs.getDouble("coord_x"),
+                        rs.getDouble("coord_y"), rs.getDouble("from_x"),
+                        rs.getLong("from_y"), rs.getString("from_name"), rs.getInt("to_x"),
+                        rs.getFloat("to_y"), rs.getString("to_name"),rs.getInt("distance"),
+                        getUserByName(rs.getString("username"))));
+            }
+            return collection;
         } catch (SQLException ex) {
             ex.printStackTrace();
             return new ArrayDeque<Route>();
@@ -143,17 +170,18 @@ public class DataBaseDAO implements DAO {
         }
     }
 
-    @Override
-    public void clear() {
-        Connection connection = connect();
-        String SQL = "DELETE FROM collection ";
-        try {
-            PreparedStatement preparedStatement = connection.prepareStatement(SQL);
-            preparedStatement.execute();
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-        }
-    }
+//    @Override
+//    public void clear() {
+//        Connection connection = connect();
+//        String SQL = "DELETE FROM collection ";
+//        try {
+//            PreparedStatement preparedStatement = connection.prepareStatement(SQL);
+//            preparedStatement.execute();
+//        } catch (SQLException ex) {
+//            ex.printStackTrace();
+//        }
+//    }
+
 
     public void removeFirst(RouteDAO dao) {
         Connection connection = connect();
@@ -171,7 +199,6 @@ public class DataBaseDAO implements DAO {
 
     public RouteDAO getDAO() {
         try {
-            Connection connection = connect();
             Deque<Route> routes = getAll();
             RouteDAO dao = new RouteDAO();
             if (routes.isEmpty()) return new RouteDAO();
@@ -192,6 +219,7 @@ public class DataBaseDAO implements DAO {
             PreparedStatement pstmt = connection.prepareStatement(sql);
             pstmt.setString(1, user.getUsername());
             pstmt.setString(2, user.getPassword());
+
             pstmt.executeUpdate();
 
         } catch (SQLException e) {
@@ -264,26 +292,42 @@ public class DataBaseDAO implements DAO {
 
 
     public String getusername(int id) {
-        String SQL = "SELECT username FROM users WHERE id=?";
+        String SQL = "SELECT username FROM users WHERE user_id=?";
         try {
             PreparedStatement pstmt = connection.prepareStatement(SQL);
             pstmt.setInt(1, id);
-
-            return pstmt.executeQuery().getObject(id, String.class);
+            ResultSet rs = pstmt.executeQuery();
+            rs.next();
+            return rs.getString("username");
         } catch (SQLException ex) {
             System.out.println(ex.getMessage());
-
+            return null;
+        }
+    }
+    public User getUserByName(String username) {
+        String SQL = "SELECT * FROM users WHERE username=?";
+        try {
+            PreparedStatement pstmt = connection.prepareStatement(SQL);
+            pstmt.setString(1, username);
+            ResultSet rs = pstmt.executeQuery();
+            rs.next();
+            int user_id = rs.getInt("user_id");
+            String password = rs.getString("password");
+            return new User(username, password, user_id);
+        } catch (SQLException ex) {
+            System.out.println(ex.getMessage());
             return null;
         }
     }
 
     public String getPassword(int id) {
-        String SQL = "SELECT password FROM users WHERE id=?";
+        String SQL = "SELECT password FROM users WHERE user_id=?";
         try {
             PreparedStatement pstmt = connection.prepareStatement(SQL);
             pstmt.setInt(1, id);
-            String rs = pstmt.executeQuery().getString(id);
-            return rs;
+            ResultSet rs = pstmt.executeQuery();
+            rs.next();
+            return rs.getString("password");
         } catch (SQLException ex) {
             ex.printStackTrace();
             return null;
@@ -298,7 +342,8 @@ public class DataBaseDAO implements DAO {
             prstmt.setString(1, username);
 
             ResultSet rs = prstmt.executeQuery();
-            id = rs.getInt(username);
+            rs.next();
+            id = rs.getInt("user_id");
             return id;
 
         } catch (SQLException e) {

@@ -11,14 +11,10 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 public class ResponseSender implements Runnable {
-    private final Socket clientSocket;
-    private final OutputStream outputStream;
     private final DataOutputStream dataOutputStream;
     private final Response response;
 
-    public ResponseSender(Socket clientSocket, OutputStream outputStream, DataOutputStream dataOutputStream, Response response) {
-        this.clientSocket = clientSocket;
-        this.outputStream = outputStream;
+    public ResponseSender(DataOutputStream dataOutputStream, Response response) {
         this.dataOutputStream = dataOutputStream;
         this.response = response;
     }

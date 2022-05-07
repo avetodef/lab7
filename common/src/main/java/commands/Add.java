@@ -22,13 +22,15 @@ public class Add extends ACommands{
 
         try {
 
-            Route route = new Route(info.name, info.x, info.y, info.fromX,
+            Route route = new Route(-1, info.name, info.x, info.y, info.fromX,
                     info.fromY, info.nameFrom, info.toX, info.toY, info.nameTo,
                     info.distance, user);
-            route.setUser(user);
-            routeDAO.create(route);
-            dbDAO.create(route);
 
+            route.setUser(user);
+
+            int id = dbDAO.create(route);
+            route.setId(id);
+            routeDAO.create(route);
             response.msg("элемент добавлен в коллекцию").status(Status.OK);
         }
         catch (NoSuchElementException e){throw new ExitException(e.getMessage());}

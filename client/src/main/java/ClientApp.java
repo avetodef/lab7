@@ -42,7 +42,6 @@ public class ClientApp implements Runnable {
             if (!Authorization.isAuth) {
                 user = auth.askIfAuth(sc);
             } else {
-                System.out.println("client handler " + user);
                 go(selector, socketChannel, user);
             }
 
@@ -95,7 +94,7 @@ public class ClientApp implements Runnable {
 
                         Request request = new Request(input, null, user);
 
-                        ASCIIArt.ifExit(input, o);
+                        if(input.contains("exit")) Exit.execute();
 
                         if (input.contains("mega_rzhaka"))
                             new Thread(new VideoRzhaka()).start();

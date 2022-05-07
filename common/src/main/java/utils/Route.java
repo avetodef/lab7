@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 
 public class Route {
@@ -28,8 +29,8 @@ public class Route {
                     + from.getName() + "," + to.getToX() + "," + to.getToY() + "," + to.getName() + "," + distance;
     }
 
-    public Route(String name, double coordinatesX, Double coordinatesY, double fromX, Long fromY, String nameFrom, int toX, float toY, String nameTo, Integer distance, User user ){
-        this.id = IdGenerator.nextId();
+    public Route(int id, String name, double coordinatesX, Double coordinatesY, double fromX, Long fromY, String nameFrom, int toX, float toY, String nameTo, Integer distance, User user ){
+        this.id = id;
         this.name = name;
         this.coordinates = new Coordinates(coordinatesX, coordinatesY);
         this.from = new Location(fromX, fromY, nameFrom);
@@ -41,6 +42,10 @@ public class Route {
 
     public User getUser() {
         return user;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void setUser(User user) {
@@ -64,15 +69,17 @@ public class Route {
 
 
     @Override
-    public String toString(){
-        return System.lineSeparator()+
-                "id: " + id + System.lineSeparator() +
-                "name: " + name + System.lineSeparator() +
-                "coordinates: " + coordinates.toString() + System.lineSeparator() +
-                "location (from): " + from.toString() + System.lineSeparator() +
-                "location (to): " + to.toString() + System.lineSeparator() +
-                "distance: " + distance.toString() + System.lineSeparator() +
-                "creation date: " + creationDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy : HH.mm.ss"));
+    public String toString() {
+        return "Route" + System.lineSeparator() +"{" + System.lineSeparator() +
+                "id: " + id  + System.lineSeparator() +
+                "name: '" + name + '\'' + System.lineSeparator() +
+                "coordinates: " + coordinates + System.lineSeparator() +
+                "creationDate: " + creationDate.format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh:mm:ss")) + System.lineSeparator() +
+                "from: " + from + System.lineSeparator() +
+                "to: " + to + System.lineSeparator() +
+                "distance: " + distance + System.lineSeparator() +
+                "username: " + user.getUsername() + System.lineSeparator() +
+                '}';
     }
 
     public void update(RouteInfo routeInfo){

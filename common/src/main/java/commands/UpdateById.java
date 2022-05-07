@@ -7,6 +7,8 @@ import interaction.Response;
 import interaction.Status;
 import utils.Route;
 
+import java.util.Objects;
+
 /**
  * Класс команды UPDATE BY ID, предназначенный для обновления элемента по его id.
  *
@@ -32,8 +34,12 @@ public class UpdateById extends ACommands {
 
             else {
                 try {
-                    routeDAO.update(idFromConsole, info, routeDAO.get(idFromConsole));
-                    dbDAO.update(idFromConsole, info, routeDAO.get(idFromConsole));
+
+                    if (Objects.equals(dbDAO.getUsernameByRouteId(idFromConsole), user.getUsername())) {
+                        routeDAO.update(idFromConsole, info);
+                        dbDAO.update(idFromConsole, info);
+                        response.msg("элемент коллекции обновлен").status(Status.OK);
+                    } else response.msg("нет прав на обновление чужих элементов").status(Status.USER_EBLAN_ERROR);
 
                 } catch (IndexOutOfBoundsException e) {
                     response.msg("брат забыл айди ввести походу").status(Status.USER_EBLAN_ERROR);
@@ -42,9 +48,9 @@ public class UpdateById extends ACommands {
 
                 } catch (RuntimeException e) {
                     response.msg("чета проихошло..." + e.getMessage()).status(Status.UNKNOWN_ERROR);
+                    e.printStackTrace();
 
                 }
-                response.msg("элемент коллекции обновлен").status(Status.OK);
 
             }
 

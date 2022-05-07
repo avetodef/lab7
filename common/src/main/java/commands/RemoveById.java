@@ -6,6 +6,8 @@ import dao.RouteDAO;
 import interaction.Response;
 import interaction.Status;
 
+import java.util.Objects;
+
 /**
  * Класс команды REMOVE BY ID, предназначенный для удаления элемента по его id
  *
@@ -22,12 +24,16 @@ public class RemoveById extends ACommands {
         } else {
             try {
                 int id = Integer.parseInt(args.get(1));
-                if (!routeDAO.delete(id, routeDAO.get(id)) && !dbDAO.delete(id, routeDAO.get(id)) )
-                    response.msg("нет элемента с таким id. введите команду заново с правильным id" ).
-                            status(Status.USER_EBLAN_ERROR);
-                 else {
-                    response.msg("ура удалилось").status(Status.OK);
+
+                if(Objects.equals(dbDAO.getUsernameByRouteId(id), routeDAO.get(id).getUser().getUsername())) {
+                    if (!routeDAO.delete(id) && !dbDAO.delete(id))
+                        response.msg("нет элемента с таким id. введите команду заново с правильным id").
+                                status(Status.USER_EBLAN_ERROR);
+                    else {
+                        response.msg("ура удалилось").status(Status.OK);
+                    }
                 }
+                else response.status(Status.USER_EBLAN_ERROR).msg("нет прав на удаление чужих элементов");
 
             }
             catch (IndexOutOfBoundsException e){

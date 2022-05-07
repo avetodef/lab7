@@ -2,9 +2,6 @@ import console.ConsoleOutputer;
 import dao.DataBaseDAO;
 import exceptions.ExitException;
 import interaction.User;
-import utils.IdGenerator;
-
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -28,17 +25,17 @@ public class Authorization {
     protected User askIfAuth(Scanner sc) {
 
         try {
-            System.out.println("впервые тут? {Y/N}");
+            System.out.println("впервые тут? {y/n}");
             String answ;
 
             while (true) {
                 answ = sc.nextLine();
                 switch (answ) {
 
-                    case ("Y"): {
+                    case ("y"): {
                         return newUser(dao, sc);
                     }
-                    case ("N"): {
+                    case ("n"): {
                         while (!isAuth) {
                             o.printNormal("помнишь свой id? {y/n}");
                             String s = sc.nextLine();
@@ -65,9 +62,7 @@ public class Authorization {
                         return new User(newUsername, PasswordHandler.encode(newPassword), id);
                     }
                     case "exit": {
-                        List<String> input = new ArrayList<>();
-                        input.add("exit");
-                        ASCIIArt.ifExit(input, new ConsoleOutputer());
+                        Exit.execute();
                     }
                     case "admin": {
                         isAuth = true;
@@ -93,13 +88,16 @@ public class Authorization {
             if (!dao.checkUsername(username)) {
                 o.printNormal("теперь пароль");
                 String password = sc.nextLine();
-                isAuth = true;
-                dao.insertUser(new User(username, PasswordHandler.encode(password), id));
+                if(password.isEmpty()) o.printRed("пустой пароль...гениально");
+                else {
+                    isAuth = true;
+                    dao.insertUser(new User(username, PasswordHandler.encode(password), id));
 
-                //o.printNormal("тебе назначен id: " + dao.getUserID(username));
-                o.printPurple("Для того чтобы начать введите команду. Чтобы увидеть список доступных команд введите help");
+                    o.printNormal("тебе назначен id: " + dao.getUserID(username));
+                    o.printPurple("Для того чтобы начать введите команду. Чтобы увидеть список доступных команд введите help");
 
-                return new User(username, PasswordHandler.encode(password), dao.getUserID(username));
+                    return new User(username, PasswordHandler.encode(password), dao.getUserID(username));
+                }
             } else {
                 System.out.println("такой юзернейм уже есть");
             }
@@ -113,7 +111,7 @@ public class Authorization {
                 id = Integer.parseInt(sc.nextLine());
                 if (dao.checkID(id)) {
                     try {
-                        return new User(dao.getusername(id), dao.getPassword(id), id);
+                        return new User(dao.getusername(id), PasswordHandler.encode(dao.getPassword(id)), id);
                     } catch (RuntimeException e) {
                         e.printStackTrace();
                     }
@@ -121,9 +119,6 @@ public class Authorization {
                 break;
             } catch (RuntimeException e) {
                 o.printRed("и че это за тип данных такой");
-                e.printStackTrace();
-                continue;
-
             }
         }
         return null;
@@ -137,11 +132,11 @@ public class Authorization {
                 o.printNormal("теперь пароль");
                 newPassword = sc.nextLine();
                 if (!dao.checkPassword(PasswordHandler.encode(newPassword))) {
-                    System.out.println("что то у тебя не соотносятся пароль и юзернейм. вспомниай");
+                    System.out.println("что то у тебя не соотносятся пароль и юзернейм. вспоминай");
 
                 } else {
                     id = dao.getUserID(newUsername);
-                    return new User(newUsername, newPassword, id);
+                    return new User(newUsername, PasswordHandler.encode(newPassword), id);
                 }
             } else {
                 o.printRed("нет такого юзернейма");
