@@ -244,18 +244,6 @@ public class DataBaseDAO implements DAO {
         }
     }
 
-//    @Override
-//    public void clear() {
-//        Connection connection = connect();
-//        String SQL = "DELETE FROM collection ";
-//        try {
-//            PreparedStatement preparedStatement = connection.prepareStatement(SQL);
-//            preparedStatement.execute();
-//        } catch (SQLException ex) {
-//            ex.printStackTrace();
-//        }
-//    }
-
 
     public void removeFirst(RouteDAO dao) {
         Connection connection = connect();
@@ -426,7 +414,7 @@ public class DataBaseDAO implements DAO {
 
     public int getUserID(String username) {
         String sql = "SELECT user_id FROM users WHERE username=?";
-        int id = 1;
+        int id = 0;
         try {
             PreparedStatement prstmt = connection.prepareStatement(sql);
             prstmt.setString(1, username);

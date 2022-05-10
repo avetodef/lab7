@@ -3,4 +3,8 @@ include 'common'
 include 'client'
 include 'server'
 include 'common'
+include 'test'
+include 'lab_7'
+include 'lab_7'
+include 'common'
 

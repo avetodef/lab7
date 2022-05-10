@@ -17,7 +17,7 @@ public class VideoRzhaka extends Application implements Runnable  {
     public void start(Stage primaryStage) {
         try {
             String workingDir = System.getProperty("user.dir");
-            final File f = new File(workingDir, "video.mp4");
+            final File f = new File(workingDir, "goodmorningAlex.mp4");
 
             final Media m = new Media(f.toURI().toString());
             final MediaPlayer mp = new MediaPlayer(m);
