@@ -32,31 +32,7 @@
 4. Для синхронизации доступа к коллекции использовать синхронизацию чтения и записи с помощью
 java.util.concurrent.locks.ReentrantLock
 
-
-Описание хранимых в коллекции классов:
-public class Route {
-    private int id; //Значение поля должно быть больше 0, Значение этого поля должно быть уникальным, Значение этого поля должно генерироваться автоматически
-    private String name; //Поле не может быть null, Строка не может быть пустой
-    private Coordinates coordinates; //Поле не может быть null
-    private java.time.ZonedDateTime creationDate; //Поле не может быть null, Значение этого поля должно генерироваться автоматически
-    private Location from; //Поле не может быть null
-    private Location to; //Поле может быть null
-    private Integer distance; //Поле не может быть null, Значение поля должно быть больше 1
-}
-public class Coordinates {
-    private double x;
-    private Double y; //Значение поля должно быть больше -210, Поле не может быть null
-}
-public class Location {
-    private double x;
-    private Long y; //Поле не может быть null
-    private String name; //Строка не может быть пустой, Поле не может быть null
-}
-public class Location {
-    private int x;
-    private float y;
-    private String name; //Поле может быть null
-}
+![image](https://github.com/avetodef/prog-lab7/assets/93034945/d105d9a6-376e-43e3-8576-b20bb193a45f)
 
 
 ![waiting-for-java-server](https://user-images.githubusercontent.com/93034945/166163202-24132dfb-2944-467d-b61c-a29c5bfbdc39.gif)
